@@ -1,5 +1,5 @@
+**
 *
-
 !.gitignore
-!emacs/
-!bashconf/
+!emacs/*
+!bashconf/*
