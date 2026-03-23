@@ -1,0 +1,9 @@
+[warning]	2026-03-04 20:30:32.541024[Thread 0x00007f7adfeeba80]:Failed to load to hints.cereal. File does not exists. /home/ultrafeeder4/.config/OrcaSlicer/user/hints.cereal
+[error]	2026-03-04 20:30:36.029758[Thread 0x00007f7adfeeba80]:calc_exclude_triangles:Unable to create exclude triangles
+[error]	2026-03-04 20:30:37.101637[Thread 0x00007f7adfeeba80]:calc_exclude_triangles:Unable to create exclude triangles
+[error]	2026-03-04 20:31:25.344127[Thread 0x00007f7adfeeba80]:calc_exclude_triangles:Unable to create exclude triangles
+[warning]	2026-03-04 20:31:25.359044[Thread 0x00007f7adfeeba80]:get_version, get_version not supported,return 00.00.00.00!
+[error]	2026-03-04 20:31:28.942410[Thread 0x00007f7adfeeba80]:calc_exclude_triangles:Unable to create exclude triangles
+[warning]	2026-03-05 19:31:39.643941[Thread 0x00007f79fc7fd6c0]:Arrange full params: {"min_obj_distance":0,"accuracy":1.000000,"parallel":1,"allow_rotations":1,"do_final_align":1,"allow_multi_materials_on_same_plate":1,"avoid_extrusion_cali_region":0,"is_seq_print":0,"bed_shrink_x":1.000000,"bed_shrink_y":1.000000,"brim_skirt_distance":0.000000,"clearance_height_to_rod":36.000000,"clearance_height_to_lid":140.000000,"clearance_radius":65.000000,"printable_height":345.000000,
+[warning]	2026-03-05 23:00:22.760618[Thread 0x00007f79fc7fd6c0]:Arrange full params: {"min_obj_distance":0,"accuracy":1.000000,"parallel":1,"allow_rotations":1,"do_final_align":1,"allow_multi_materials_on_same_plate":1,"avoid_extrusion_cali_region":0,"is_seq_print":0,"bed_shrink_x":1.000000,"bed_shrink_y":1.000000,"brim_skirt_distance":0.000000,"clearance_height_to_rod":36.000000,"clearance_height_to_lid":140.000000,"clearance_radius":65.000000,"printable_height":345.000000,
+[error]	2026-03-05 23:05:48.392432[Thread 0x00007f7adfeeba80]:calc_exclude_triangles:Unable to create exclude triangles

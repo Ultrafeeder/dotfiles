@@ -1,0 +1,25 @@
+{
+    "activate_air_filtration": [
+        "1"
+    ],
+    "activate_chamber_temp_control": [
+        "1"
+    ],
+    "fan_max_speed": [
+        "100"
+    ],
+    "filament_settings_id": [
+        "Sovol SV08 PLA -Solid-Color-Generic"
+    ],
+    "from": "User",
+    "inherits": "Sovol SV08 PLA",
+    "is_custom_defined": "0",
+    "name": "Sovol SV08 PLA -Solid-Color-Generic",
+    "nozzle_temperature_initial_layer": [
+        "220"
+    ],
+    "nozzle_temperature_range_high": [
+        "230"
+    ],
+    "version": "2.3.1.10"
+}

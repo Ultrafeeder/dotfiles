@@ -1,6 +1,12 @@
 mozilla/
 environment.d/
 dconf/
+discord/
+gcloud/
+qt6ct/
+unity3d/
+fontconfig/
+font-manager/
 kate/
 mozilla/
 libaccounts-glib/
@@ -9,3 +15,4 @@ systemd/
 session/
 xsettingsd/
 emacs/recentf
+nixos/hardware-configuration.nix
