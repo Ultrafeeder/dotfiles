@@ -3291,7 +3291,43 @@ not support these arguments.)
      initialized.
 
 ‘D t’ (‘magit-diff-toggle-refine-hunk’)
-     This command toggles hunk refinement on or off.
+     This command toggles hunk refinement on or off, or switches the
+     refinement method.
+
+     If hunk refinement is currently on, then turn off hunk refinement.
+     If hunk refinement is off, then turn on immediate hunk refinement.
+
+     With a prefix argument, an alternative refinement method comes into
+     play.  When using that method, mode hunks are not refined
+     immediately, instead each hunk is refined once it is selected, and
+     then stays refined until the next refresh of the buffer.  If hunk
+     refinement is currently on, then toggle between refining all hunks
+     up front or only once they are selected.  If hunk refinement is
+     off, then turn on hunk refinement, using the eventual refinement
+     method.
+
+     Customize option ‘magit-diff-refine-hunk’ to change the default
+     method.
+
+‘D T’ (‘magit-diff-toggle-fontify-hunk’)
+     This command toggles hunk fontification on or off, or switches the
+     fontification method.
+
+     If hunk fontification is currently on, then turn off hunk
+     fontification.  If hunk fontification is off, then turn on
+     immediate hunk fontification.
+
+     With a prefix argument, an alternative fontification method comes
+     into play.  When using that method, mode hunks are not refined
+     immediately, instead each hunk is refined once it is selected, and
+     then stays refined until the next refresh of the buffer.  If hunk
+     fontification is currently on, then toggle between refining all
+     hunks up front or only once they are selected.  If hunk
+     fontification is off, then turn on fontification, using the
+     eventual fontification method.
+
+     Customize option ‘magit-diff-fontify-hunk’ to change the default
+     method.
 
 ‘D r’ (‘magit-diff-switch-range-type’)
      This command converts the diff range type from "revA..revB" to
@@ -3413,6 +3449,39 @@ they are available here too.
  -- User Option: magit-diff-refine-ignore-whitespace
      Whether to ignore whitespace changes in word-granularity
      differences.
+
+ -- User Option: magit-diff-fontify-hunk
+     Whether to apply syntax highlighting to diff hunks.
+
+        • ‘nil’ Never fontify diff hunks.
+        • ‘all’ Fontify all diff hunks.
+        • ‘t’ Fontify each hunk once it becomes the current section.
+          Keep the fontification when another section is selected.
+          Refreshing the buffer removes all fontification.  This variant
+          is only provided for performance reasons.
+
+     If this is enabled, then ‘magit-diff-specify-hunk-foreground’
+     should be disabled.  Also consider enabling
+     ‘magit-diff-use-indicator-faces’.  Emacs has to be restarted, after
+     changing the value of the former.
+
+     This is considered experimental and is disabled by default, because
+     the fontification is done synchronously, and that can lead to a
+     noticable delay.  The plan is to make it asynchronous, probably
+     with the help of the new ‘futur’ package, which itself still under
+     heavy development.
+
+ -- User Option: magit-diff-specify-hunk-foreground
+     Whether to specify foreground colors for hunk faces.
+
+     Setting this only has an effect if done before Magit is loaded.
+
+ -- User Option: magit-diff-use-indicator-faces
+     Whether to use separate faces for diff side indicators.
+
+     If non-‘nil’, use, for example, ‘magit-diff-removed-indicator’ for
+     the plus sign at the beginning of a removed line.  If ‘nil’, use
+     the same face as for the rest of the line.
 
  -- User Option: magit-diff-adjust-tab-width
      Whether to adjust the width of tabs in diffs.
@@ -4622,14 +4691,14 @@ Fine-grained un-/staging has to be done from the status or a diff
 buffer, but it's also possible to un-/stage all changes made to the file
 visited in the current buffer right from inside that buffer.
 
-‘M-x magit-stage-file’
+‘M-x magit-stage-files’
      When invoked inside a file-visiting buffer, then stage all changes
      to that file.  In a Magit buffer, stage the file at point if any.
      Otherwise prompt for a file to be staged.  With a prefix argument
      always prompt the user for a file, even in a file-visiting buffer
      or when there is a file section at point.
 
-‘M-x magit-unstage-file’
+‘M-x magit-unstage-files’
      When invoked inside a file-visiting buffer, then unstage all
      changes to that file.  In a Magit buffer, unstage the file at point
      if any.  Otherwise prompt for a file to be unstaged.  With a prefix
@@ -5729,11 +5798,15 @@ following suffix commands.
      merge commit, which makes it possible to inspect how conflicts were
      resolved and to adjust the commit message.
 
+     To create an octopus-merge, separate branches with commas.
+
 ‘m e’ (‘magit-merge-editmsg’)
      This command merges another branch or an arbitrary revision into
      the current branch and opens a commit message buffer, so that the
      user can make adjustments.  The commit is not actually created
      until the user finishes with ‘C-c C-c’.
+
+     To create an octopus-merge, separate branches with commas.
 
 ‘m n’ (‘magit-merge-nocommit’)
      This command merges another branch or an arbitrary revision into
@@ -5752,6 +5825,8 @@ following suffix commands.
      merged.  Finally, if ‘magit-branch-pull-request’ was used to create
      the merged branch, then the respective remote branch is also
      removed.
+
+     To create an octopus-merge, separate branches with commas.
 
 ‘m d’ (‘magit-merge-dissolve’)
      This command merges the current branch into another local branch
@@ -5959,6 +6034,11 @@ Two Remotes::.
      This command starts a non-interactive rebase sequence to transfer
      commits from START to ‘HEAD’ onto NEWBASE.  START has to be
      selected from a list of recent commits.
+
+     This command calls ‘git rebase --onto NEWBASE START HEAD’.  Because
+     the range always ends at ‘HEAD’, you must first check out the
+     branch or commit you want as the upper bound (a detached ‘HEAD’
+     works too).
 
    By default Magit uses the ‘--autostash’ argument, which causes
 uncommitted changes to be stored in a stash before the rebase begins.
@@ -6807,68 +6887,4 @@ These variables can be set from the transient prefix command
      ‘--tags’, then all tags are fetched.  If this variable has no
      value, then only tags are fetched that are reachable from fetched
      branches.
-
-
-File: magit.info,  Node: Fetching,  Next: Pulling,  Prev: Remotes,  Up: Transferring
-
-7.2 Fetching
-============
-
-Also see *note (gitman)git-fetch::.  For information about the upstream
-and the push-remote, see *note The Two Remotes::.
-
-‘f’ (‘magit-fetch’)
-     This transient prefix command binds the following suffix commands
-     along with the appropriate infix arguments and displays them in a
-     temporary buffer until a suffix is invoked.
-
-‘f p’ (‘magit-fetch-from-pushremote’)
-     This command fetches from the current push-remote.
-
-     With a prefix argument or when the push-remote is either not
-     configured or unusable, then let the user first configure the
-     push-remote.
-
-‘f u’ (‘magit-fetch-from-upstream’)
-     This command fetch from the upstream of the current branch.
-
-     If the upstream is configured for the current branch and names an
-     existing remote, then use that.  Otherwise try to use another
-     remote: If only a single remote is configured, then use that.
-     Otherwise if a remote named "origin" exists, then use that.
-
-     If no remote can be determined, then this command is not available
-     from the ‘magit-fetch’ transient prefix and invoking it directly
-     results in an error.
-
-‘f e’ (‘magit-fetch-other’)
-     This command fetch from a repository read from the minibuffer.
-
-‘f o’ (‘magit-fetch-branch’)
-     This command fetches a branch from a remote, both of which are read
-     from the minibuffer.
-
-‘f r’ (‘magit-fetch-refspec’)
-     This command fetches from a remote using an explicit refspec, both
-     of which are read from the minibuffer.
-
-‘f a’ (‘magit-fetch-all’)
-     This command fetches from all remotes.
-
-‘f m’ (‘magit-fetch-modules’)
-     This command fetches all submodules.  With a prefix argument, it
-     acts as a transient prefix command, allowing the caller to set
-     options.
-
- -- User Option: magit-pull-or-fetch
-     By default fetch and pull commands are available from separate
-     transient prefix command.  Setting this to ‘t’ adds some (but not
-     all) of the above suffix commands to the ‘magit-pull’ transient.
-
-     If you do that, then you might also want to change the key binding
-     for these prefix commands, e.g.:
-
-          (setq magit-pull-or-fetch t)
-          (define-key magit-mode-map "f" 'magit-pull) ; was magit-fetch
-          (define-key magit-mode-map "F" nil)         ; was magit-pull
 

@@ -51,6 +51,8 @@
 (declare-function magit-wip-get-ref "magit-wip" ())
 (declare-function magit-wip-commit-worktree "magit-wip" (ref files msg))
 
+(declare-function magit--blob-cache-zap "magit-files" ())
+
 ;;; Options
 
 (defcustom magit-mode-hook nil
@@ -581,11 +583,13 @@ Magit is documented in info node `(magit)'."
 (defvaralias 'magit-buffer-refname 'magit-buffer-revision)
 (defvar-local magit-buffer-revision nil)
 (defvar-local magit-buffer-revision-oid nil)
+(defvar-local magit-buffer-blob-oid nil)
 (defvar-local magit-buffer-file-name nil)
 
 ;; Preserve when major-mode is changed in file-visiting buffers.
 (put 'magit-buffer-revision 'permanent-local t)
 (put 'magit-buffer-revision-oid 'permanent-local t)
+(put 'magit-buffer-blob-oid 'permanent-local t)
 (put 'magit-buffer-file-name 'permanent-local t)
 
 (eval-and-compile
@@ -1557,13 +1561,14 @@ repositories."
   "Zap caches for the current repository.
 
 Remove the repository's entry from `magit-repository-local-cache',
-remove the host's entry from `magit--host-git-version-cache', and
-set `magit-section-visibility-cache' to nil for all Magit buffers
-of the repository.
+remove the host's entry from `magit--host-git-version-cache', set
+`magit-section-visibility-cache' to nil for all Magit buffers of
+the repository, and empty the `magit--blob-cache'.
 
 With a prefix argument or if optional ALL is non-nil, discard the
 mentioned caches completely."
   (interactive)
+  (magit--blob-cache-zap)
   (cond (all
          (setq magit-repository-local-cache nil)
          (setq magit--host-git-version-cache nil)
@@ -1612,7 +1617,7 @@ The additional output can be found in the *Messages* buffer."
 (defun magit-file-region-line-numbers ()
   "Return the bounds of the region as line numbers.
 The returned value has the form (BEGINNING-LINE END-LINE).  If
-the region end at the beginning of a line, do not include that
+the region ends at the beginning of a line, do not include that
 line.  Avoid including the line after the end of the file."
   (and (magit-buffer-file-name)
        (region-active-p)

@@ -12,6 +12,7 @@
 (autoload 'elpaca-menu-item "elpaca" "\
 Return menu item matching ID in `elpaca-menu-functions'.
 If ID is nil, prompt for item. If INTERACTIVE is non-nil, copy to `kill-ring'.
+When INTERACTIVE equals \\[universal-argument], copy as an order declaration.
 
 (fn &optional ID INTERACTIVE)" t)
 (autoload 'elpaca-update-menus "elpaca" "\
@@ -96,7 +97,7 @@ See Info node `(elpaca) Basic Concepts'.
 (function-put 'elpaca 'lisp-indent-function 1)
 (autoload 'elpaca-try "elpaca" "\
 Try ORDER.
-Install the repo/build files on disk.
+Install the source/build files on disk.
 Activate the corresponding package for the current session.
 ORDER's package is not activated during subsequent sessions, but still on disk.
 When INTERACTIVE is non-nil, immediately process ORDER, otherwise queue ORDER.
@@ -113,7 +114,7 @@ If DEPS is non-nil (interactively with \\[universal-argument]) delete dependenci
 If FORCE is non-nil (interactively with \\[universal-argument] \\[universal-argument])
 do not confirm before deleting package and DEPS.
 
-(fn ID &optional FORCE DEPS IGNORED)" t)
+(fn ID &optional FORCE DEPS)" t)
 (autoload 'elpaca-rebuild "elpaca" "\
 Rebuild ID's associated package.
 When INTERACTIVE is non-nil, prompt for ID, immediately process.
@@ -121,18 +122,18 @@ With a prefix argument, rebuild current file's package or prompt if none found.
 
 (fn ID &optional INTERACTIVE)" t)
 (autoload 'elpaca-fetch "elpaca" "\
-Fetch ID's associated package remote commits.
+Download ID's associated package updates.
 This does not merge changes or rebuild the packages.
 If INTERACTIVE is non-nil immediately process, otherwise queue.
 
 (fn ID &optional INTERACTIVE)" t)
 (autoload 'elpaca-fetch-all "elpaca" "\
-Fetch queued elpaca remotes.  If INTERACTIVE is non-nil, process queues.
+Download queued elpaca remotes. If INTERACTIVE is non-nil, process queues.
 
 (fn &optional INTERACTIVE)" t)
 (autoload 'elpaca-merge "elpaca" "\
-Merge package commits associated with ID.
-If FETCH is non-nil, download package changes before merging.
+Install package updates associated with ID.
+If FETCH is non-nil, download package updates before merging.
 If INTERACTIVE is non-nil, the queued order is processed immediately.
 
 (fn ID &optional FETCH INTERACTIVE)" t)
@@ -153,7 +154,7 @@ Update all queued packages. If INTERACTIVE is non-nil, process queue.
 (fn &optional INTERACTIVE)" t)
 (autoload 'elpaca-with-dir "elpaca" "\
 Evaluate BODY with E's `default-directory' bound.
-TYPE is either `repo` or `build`, for repo or build directory.
+TYPE is either `source` or `build`, for source or build directory.
 
 (fn E TYPE &rest BODY)" nil t)
 (function-put 'elpaca-with-dir 'lisp-indent-function 2)
@@ -172,7 +173,7 @@ Write lock file to PATH for current state of queued ELPACAS.
 
 (fn PATH &optional ELPACAS)" t)
 (autoload 'elpaca-visit "elpaca" "\
-Open local repository directory for E with ID.
+Open local source directory for E with ID.
 When BUILD is non-nil visit build directory.
 
 (fn &optional ID BUILD)" t)
@@ -189,6 +190,11 @@ OUTPUT may be any of the following:
 
 (fn &optional OUTPUT)" t)
 (register-definition-prefixes "elpaca" '("elpaca"))
+
+
+;;; Generated autoloads from elpaca-git.el
+
+(register-definition-prefixes "elpaca-git" '("elpaca-git-"))
 
 
 ;;; Generated autoloads from elpaca-info.el
@@ -229,7 +235,7 @@ If RECACHE is non-nil, recompute menu items from `elpaca-menu-functions'.
 Fulfill GNU ELPA menu `index` or `update` ITEM REQUEST.
 
 (fn REQUEST &optional ITEM)")
-(autoload 'elpaca-menu-non-gnu-elpa "elpaca-menu-elpa" "\
+(autoload 'elpaca-menu-nongnu-elpa "elpaca-menu-elpa" "\
 Fulfill menu NonGNU ELPA `index` or `update` ITEM REQUEST.
 
 (fn REQUEST &optional ITEM)")
@@ -259,6 +265,11 @@ Return menu ITEM REQUEST.
 ;;; Generated autoloads from elpaca-process.el
 
 (register-definition-prefixes "elpaca-process" '("elpaca-"))
+
+
+;;; Generated autoloads from elpaca-tar.el
+
+(register-definition-prefixes "elpaca-tar" '("elpaca-tar-"))
 
 
 ;;; Generated autoloads from elpaca-test.el

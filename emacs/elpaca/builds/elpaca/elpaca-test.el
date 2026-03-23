@@ -1,6 +1,6 @@
 ;;; elpaca-test.el --- Elpaca debugging/testing macro      -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023-2025  Nicholas Vollmer
+;; Copyright (C) 2023-2026  Nicholas Vollmer
 
 ;; Author: Nicholas Vollmer
 ;; Keywords: convenience
@@ -121,9 +121,11 @@ If INSTALLERP is non-nil, stop after Elpaca installer."
   "Write init.el FILE with FORMS in test environment.
 If FILE is nil, use upstream INSTALLER file.
 For DEPTH, REPO, REF, FORMS see `elpaca-test' keyword args."
-  (let ((contents (if file (with-temp-buffer (insert-file-contents (expand-file-name file))
-                                             (buffer-string))
-                    (elpaca-test--upstream-init installer))))
+  (let ((contents (cond ((and file (file-exists-p file))
+                         (with-temp-buffer (insert-file-contents (expand-file-name file))
+                                           (buffer-string)))
+                        (file file)
+                        (t (elpaca-test--upstream-init installer)))))
     (elpaca--write-file (expand-file-name "./init.el")
       (emacs-lisp-mode)
       (insert (elpaca-test--init contents `(:ref ,(unless (eq ref 'local) ref) :depth ,depth ,@(when repo `(:repo ,repo))) forms))
@@ -141,7 +143,7 @@ For DEPTH, REPO, REF, FORMS see `elpaca-test' keyword args."
 (defun elpaca-test--copy-local-store ()
   "Copy host `elpaca-directory' store to test env."
   (cl-loop with env = (expand-file-name "./elpaca/")
-           for path in '("./repos/elpaca" "./cache/")
+           for path in '("./sources/elpaca" "./cache/")
            do (when-let* ((local (expand-file-name path elpaca-directory))
                           ((file-exists-p local))
                           (destination (expand-file-name path env)))
@@ -188,7 +190,7 @@ When the test is non-interactive, its process buffer is initially current."
               (message "Testing Elpaca in %s @ %s"
                        ,default-directory
                        (if-let* ((localp ,localp)
-                                 (default-directory (expand-file-name "repos/elpaca/" elpaca-directory)))
+                                 (default-directory (expand-file-name "sources/elpaca/" elpaca-directory)))
                            (concat (or (ignore-errors (elpaca-process-output "git" "diff" "--quiet")) "DIRTY ")
                                    (string-trim (elpaca-process-output "git" "log" "--pretty=%h %D" "-1")))
                          ,(or (unless localp (car (plist-get args :ref))) "master")))))))
@@ -244,6 +246,14 @@ BATCH, TIMEOUT, and EARLY match :interactive, :timeout, :early-init keys."
                              :sentinel #'elpaca-test--sentinel)
                :vars vars))
 
+(defmacro elpaca-test-insert (file point &rest body)
+  "Return contents of FILE with BODY inserted at POINT."
+  `(with-temp-buffer
+     (insert-file-contents ,file)
+     (goto-char ,point)
+     (insert (prin1-to-string (macroexp-progn ',body)))
+     (buffer-substring-no-properties (point-min) (point-max))))
+
 ;;;###autoload
 (defmacro elpaca-test (&rest body)
   "Test Elpaca in a clean environment.
@@ -293,7 +303,7 @@ The following keys are recognized:
                            (when localp (user-error "Cannot use :ref local with :init (:file ...)"))
                            (eval (cadar init) t))
                           ((eq (car-safe init) 'user) (locate-user-emacs-file "./init.el"))
-                          (localp (expand-file-name "./repos/elpaca/doc/init.el" elpaca-directory))))
+                          (localp (expand-file-name "./sources/elpaca/doc/init.el" elpaca-directory))))
          (early (plist-get args :early-init))
          (early-file (cond ((eq (car-safe (car-safe early)) :file) (eval (cadar early) t))
                            ((eq (car-safe early) 'user) (locate-user-emacs-file "./early-init.el"))))
