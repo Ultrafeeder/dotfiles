@@ -1,5 +1,10 @@
-**
-*
-!.gitignore
-!emacs/*
-!bashconf/*
+mozilla/
+environment.d/
+dconf/
+kate/
+mozilla/
+libaccounts-glib/
+pulse/
+systemd/
+session/
+xsettingsd/

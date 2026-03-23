@@ -175,7 +175,7 @@ As defined by the Language Server Protocol 3.16."
 
 (defcustom lsp-client-packages
   '( ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-asm lsp-astro
-     lsp-autotools lsp-awk lsp-bash lsp-beancount lsp-bufls lsp-clangd
+     lsp-autotools lsp-awk lsp-bash lsp-beancount lsp-biome lsp-bufls lsp-clangd
      lsp-clojure lsp-cmake lsp-cobol lsp-credo lsp-crystal lsp-csharp lsp-c3
      lsp-css lsp-copilot lsp-crates lsp-cucumber lsp-cypher lsp-d lsp-dart
      lsp-dhall lsp-docker lsp-dockerfile lsp-earthly lsp-elixir lsp-elm lsp-emmet
@@ -945,6 +945,8 @@ Changes take effect only when a new session is started."
     (fsharp-mode . "fsharp")
     (reason-mode . "reason")
     (caml-mode . "ocaml")
+    (neocaml-mode . "ocaml")
+    (neocaml-interface-mode . "ocaml")
     (tuareg-mode . "ocaml")
     (futhark-mode . "futhark")
     (swift-mode . "swift")
@@ -1162,7 +1164,8 @@ must be used for handling a particular message.")
 (defcustom lsp-file-watch-threshold 1000
   "Show warning if the files to watch are more than.
 Set to nil to disable the warning."
-  :type 'number
+  :type '(choice (const :tag "No warning" nil)
+                 (integer :tag "Number of files"))
   :group 'lsp-mode)
 ;;;###autoload(put 'lsp-file-watch-threshold 'safe-local-variable (lambda (i) (or (numberp i) (not i))))
 
@@ -1861,6 +1864,9 @@ etc."
          (widen)
          (save-excursion ,@form)))))
 
+;; Forward-declare; actual `defvar-local' is in the "Position encoding" section.
+(defvar lsp--move-to-column-function)
+
 ;; from http://emacs.stackexchange.com/questions/8082/how-to-get-buffer-position-given-line-number-and-column-number
 (defun lsp--line-character-to-point (line character)
   "Return the point for character CHARACTER on line LINE."
@@ -1869,13 +1875,7 @@ etc."
         (lsp-save-restriction-and-excursion
           (goto-char (point-min))
           (forward-line line)
-          ;; server may send character position beyond the current line and we
-          ;; should fallback to line end.
-          (-let [line-end (line-end-position)]
-            (if (> character (- line-end (point)))
-                line-end
-              (forward-char character)
-              (point)))))))
+          (funcall lsp--move-to-column-function character)))))
 
 (lsp-defun lsp--position-to-point ((&Position :line :character))
   "Convert `Position' object in PARAMS to a point."
@@ -2017,45 +2017,49 @@ Used to prevent repeated warnings for the same invalid pattern.")
   "Return the first regex, if any, within REGEX-LIST matching STR.
 Returns the matching regex string on success, nil on no match or invalid regex.
 Invalid regex patterns are logged as warnings (once per pattern) and skipped."
-  (--first (condition-case err
-               (string-match it str)
-             (invalid-regexp
-              (unless (gethash it lsp--warned-invalid-regexps)
-                (puthash it t lsp--warned-invalid-regexps)
-                (lsp-warn "Invalid regexp in watch pattern: %s (parsing %s)"
-                          (error-message-string err) it))
-              nil))
-           regex-list))
+  (let (result)
+    (while regex-list
+      (let ((re (car regex-list)))
+        (setq regex-list (cdr regex-list))
+        (condition-case err
+            (when (string-match-p re str)
+              (setq result re
+                    regex-list nil))
+          (invalid-regexp
+           (unless (gethash re lsp--warned-invalid-regexps)
+             (puthash re t lsp--warned-invalid-regexps)
+             (lsp-warn "Invalid regexp in watch pattern: %s (parsing %s)"
+                       (error-message-string err) re))))))
+    result))
 
 (cl-defstruct lsp-watch
   (descriptors (make-hash-table :test 'equal))
   root-directory)
 
 (defun lsp--folder-watch-callback (event callback watch ignored-files ignored-directories)
-  (let ((file-name (cl-third event))
-        (event-type (cl-second event)))
+  (let ((file-name (nth 2 event))
+        (event-type (nth 1 event)))
     (cond
      ((and (file-directory-p file-name)
-           (equal 'created event-type)
+           (eq 'created event-type)
            (not (lsp--string-match-any ignored-directories file-name)))
 
       (lsp-watch-root-folder (file-truename file-name) callback ignored-files ignored-directories watch)
 
       ;; process the files that are already present in
       ;; the directory.
-      (->> (directory-files-recursively file-name ".*" t)
-           (seq-do (lambda (f)
-                     (unless (file-directory-p f)
-                       (funcall callback (list nil 'created f)))))))
+      (dolist (f (directory-files-recursively file-name ".*" t))
+        (unless (file-directory-p f)
+          (funcall callback (list nil 'created f)))))
      ((and (memq event-type '(created deleted changed))
            (not (file-directory-p file-name))
            (not (lsp--string-match-any ignored-files file-name)))
       (funcall callback event))
-     ((and (memq event-type '(renamed))
+     ((and (eq event-type 'renamed)
            (not (file-directory-p file-name))
            (not (lsp--string-match-any ignored-files file-name)))
-      (funcall callback `(,(cl-first event) deleted ,(cl-third event)))
-      (funcall callback `(,(cl-first event) created ,(cl-fourth event)))))))
+      (funcall callback (list (car event) 'deleted (nth 2 event)))
+      (funcall callback (list (car event) 'created (nth 3 event)))))))
 
 (defun lsp--ask-about-watching-big-repo (number-of-directories dir)
   "Ask the user if they want to watch NUMBER-OF-DIRECTORIES from a repository DIR.
@@ -2074,42 +2078,28 @@ Do you want to watch all files in %s? "
      (concat "You can configure this warning with the `lsp-enable-file-watchers' "
              "and `lsp-file-watch-threshold' variables"))))
 
-
-(defun lsp--path-is-watchable-directory (path dir ignored-directories)
-  "Figure out whether PATH (inside of DIR) is meant to have a file watcher set.
-IGNORED-DIRECTORIES is a list of regexes to filter out directories we don't
-want to watch."
-  (let
-      ((full-path (f-join dir path)))
-    (and (file-accessible-directory-p full-path)
-         (not (equal path "."))
-         (not (equal path ".."))
-         (not (lsp--string-match-any ignored-directories full-path)))))
-
-
 (defun lsp--all-watchable-directories (dir ignored-directories &optional visited)
   "Traverse DIR recursively returning a list of paths that should have watchers.
 IGNORED-DIRECTORIES will be used for exclusions.
 VISITED is used to track already-visited directories to avoid infinite loops."
-  (let* ((dir (if (f-symlink? dir)
-                  (file-truename dir)
-                dir))
-         ;; Initialize visited directories if not provided
-         (visited (or visited (make-hash-table :test 'equal))))
-    (if (gethash dir visited)
-        ;; If the directory has already been visited, skip it
-        nil
-      ;; Mark the current directory as visited
-      (puthash dir t visited)
-      (apply #'nconc
-             ;; the directory itself is assumed to be part of the set
-             (list dir)
-             ;; collect all subdirectories that are watchable
-             (-map
-              (lambda (path) (lsp--all-watchable-directories (f-join dir path) ignored-directories visited))
-              ;; but only look at subdirectories that are watchable
-              (-filter (lambda (path) (lsp--path-is-watchable-directory path dir ignored-directories))
-                       (directory-files dir)))))))
+  (let ((visited (or visited (make-hash-table :test 'equal)))
+        (stack (list (if (file-symlink-p dir) (file-truename dir) dir)))
+        result)
+    (while stack
+      (let ((cur (pop stack)))
+        (unless (gethash cur visited)
+          (puthash cur t visited)
+          (push cur result)
+          (dolist (entry (directory-files cur))
+            (unless (or (string= entry ".") (string= entry ".."))
+              (let ((full-path (expand-file-name entry cur)))
+                (when (and (file-accessible-directory-p full-path)
+                           (not (lsp--string-match-any ignored-directories full-path)))
+                  (push (if (file-symlink-p full-path)
+                            (file-truename full-path)
+                          full-path)
+                        stack))))))))
+    (nreverse result)))
 
 (defun lsp-watch-root-folder (dir callback ignored-files ignored-directories &optional watch warn-big-repo?)
   "Create recursive file notification watch in DIR.
@@ -3805,7 +3795,7 @@ disappearing, unset all the variables related to it."
 (defun lsp--client-capabilities (&optional custom-capabilities)
   "Return the client capabilities appending CUSTOM-CAPABILITIES."
   (append
-   `((general . ((positionEncodings . ["utf-32", "utf-16"])))
+   `((general . ((positionEncodings . ["utf-32" "utf-8" "utf-16"])))
      (workspace . ((workspaceEdit . ((documentChanges . t)
                                      (resourceOperations . ["create" "rename" "delete"])))
                    (applyEdit . t)
@@ -3934,20 +3924,19 @@ disappearing, unset all the variables related to it."
       (when (cl-loop for capability in (lsp--workspace-registered-server-capabilities workspace)
                      thereis (and (equal (lsp--registered-capability-method capability)
                                          "workspace/didChangeWatchedFiles")
-                                  (cl-loop for fs-watcher in (lsp:did-change-watched-files-registration-options-watchers
+                                  (cl-loop for fs-watcher across (lsp:did-change-watched-files-registration-options-watchers
                                                               (lsp--registered-capability-options capability))
-                                           thereis (let ((glob-pattern (lsp:file-system-watcher-glob-pattern fs-watcher))
-                                                         (kind? (lsp:file-system-watcher-kind? fs-watcher))
-                                                         (cached-regexp (lsp-get fs-watcher :_cachedRegexp)))
+                                           thereis (let ((kind? (lsp:file-system-watcher-kind? fs-watcher)))
                                                      (when (or (null kind?)
                                                                (> (logand kind? watch-bit) 0))
-                                                       (let ((regexes (or cached-regexp
-                                                                          (let ((regexp (lsp-glob-to-regexps glob-pattern)))
+                                                       (let ((regexes (or (lsp-get fs-watcher :_cachedRegexp)
+                                                                          (let ((regexp (lsp-glob-to-regexps
+                                                                                         (lsp:file-system-watcher-glob-pattern fs-watcher))))
                                                                             (lsp-put fs-watcher :_cachedRegexp regexp)
                                                                             regexp))))
                                                          (cl-loop for re in regexes
-                                                                  thereis (or (string-match re changed-file)
-                                                                              (string-match re rel-changed-file)))))))))
+                                                                  thereis (or (string-match-p re changed-file)
+                                                                              (string-match-p re rel-changed-file)))))))))
         (with-lsp-workspace workspace
           (lsp-notify
            "workspace/didChangeWatchedFiles"
@@ -4436,12 +4425,87 @@ yet."
 (defun lsp--cur-line (&optional point)
   (1- (line-number-at-pos point)))
 
+;;
+;; Position encoding
+;;
+;; LSP uses UTF-16 code units for character offsets by default.  Emacs uses
+;; codepoints (effectively UTF-32).  Characters in the supplementary planes
+;; (U+10000–U+10FFFF, e.g. emoji) require 2 UTF-16 code units but only 1
+;; Emacs character position.  The functions below handle the conversion.
+;; With LSP 3.17 positionEncoding negotiation, servers may use UTF-32 or
+;; UTF-8 instead, avoiding the conversion entirely.
+
+(defvar-local lsp--position-column-function #'lsp--utf-32-column
+  "Function to compute the column offset for the current point.
+Set per-buffer based on the negotiated position encoding.")
+
+(defvar-local lsp--move-to-column-function #'lsp--move-to-utf-32-column
+  "Function to move point to a given column offset.
+Set per-buffer based on the negotiated position encoding.")
+
+(defun lsp--utf-16-column ()
+  "Return the current column as a UTF-16 code unit offset from line beginning."
+  (/ (- (length (encode-coding-region (line-beginning-position)
+                                      (point) 'utf-16 t))
+        2)                              ; subtract 2-byte BOM
+     2))                                ; convert bytes to code units
+
+(defun lsp--move-to-utf-16-column (column)
+  "Move point to COLUMN expressed as UTF-16 code unit offset from line beginning."
+  (let ((bol (line-beginning-position))
+        (eol (line-end-position))
+        (goal column))
+    (goto-char bol)
+    (while (and (> goal 0) (< (point) eol))
+      (when (<= #x10000 (char-after) #x10ffff)
+        (setq goal (1- goal)))           ; supplementary char = 2 UTF-16 units
+      (forward-char 1)
+      (setq goal (1- goal)))
+    (point)))
+
+(defun lsp--utf-32-column ()
+  "Return the current column as a codepoint offset from line beginning."
+  (- (point) (line-beginning-position)))
+
+(defun lsp--move-to-utf-32-column (column)
+  "Move point to COLUMN expressed as codepoint offset from line beginning."
+  (goto-char (min (+ (line-beginning-position) column) (line-end-position)))
+  (point))
+
+(defun lsp--utf-8-column ()
+  "Return the current column as a UTF-8 byte offset from line beginning."
+  (- (position-bytes (point)) (position-bytes (line-beginning-position))))
+
+(defun lsp--move-to-utf-8-column (column)
+  "Move point to COLUMN expressed as UTF-8 byte offset from line beginning."
+  (let ((bol (line-beginning-position))
+        (eol (line-end-position))
+        (goal-byte (+ (position-bytes (line-beginning-position)) column)))
+    (goto-char bol)
+    (while (and (< (position-bytes (point)) goal-byte) (< (point) eol))
+      (forward-char 1))
+    (point)))
+
+(defun lsp--set-position-encoding (encoding)
+  "Set position encoding functions for the current buffer.
+ENCODING is a string: \"utf-16\", \"utf-32\", or \"utf-8\"."
+  (pcase encoding
+    ("utf-16"
+     (setq-local lsp--position-column-function #'lsp--utf-16-column)
+     (setq-local lsp--move-to-column-function #'lsp--move-to-utf-16-column))
+    ("utf-8"
+     (setq-local lsp--position-column-function #'lsp--utf-8-column)
+     (setq-local lsp--move-to-column-function #'lsp--move-to-utf-8-column))
+    (_
+     (setq-local lsp--position-column-function #'lsp--utf-32-column)
+     (setq-local lsp--move-to-column-function #'lsp--move-to-utf-32-column))))
+
 (defun lsp--cur-position ()
   "Make a Position object for the current point."
   (or (lsp-virtual-buffer-call :cur-position)
       (lsp-save-restriction-and-excursion
         (list :line (lsp--cur-line)
-              :character (- (point) (line-beginning-position))))))
+              :character (funcall lsp--position-column-function)))))
 
 (defun lsp--point-to-position (point)
   "Convert POINT to Position."
@@ -8132,6 +8196,14 @@ SESSION is the active session."
          (setf (lsp--workspace-server-capabilities workspace) capabilities
                (lsp--workspace-status workspace) 'initialized)
 
+         ;; Apply the negotiated position encoding to all workspace buffers.
+         (when-let* ((encoding (lsp:server-capabilities-position-encoding? capabilities)))
+           (mapc (lambda (buffer)
+                   (when (lsp-buffer-live-p buffer)
+                     (lsp-with-current-buffer buffer
+                       (lsp--set-position-encoding encoding))))
+                 (lsp--workspace-buffers workspace)))
+
          (with-lsp-workspace workspace
            (lsp-notify "initialized" lsp--empty-ht))
 
@@ -8611,8 +8683,9 @@ nil."
             (:gzip (concat store-path ".gz"))
             (:zip (concat store-path ".zip"))
             (:targz (concat store-path ".tar.gz"))
+            (:tarxz (concat store-path ".tar.xz"))
             (`nil store-path)
-            (_ (error ":decompress must be `:gzip', `:zip', `:targz' or `nil'")))))
+            (_ (error ":decompress must be `:gzip', `:zip', `:targz', `:tarxz' or `nil'")))))
     (make-thread
      (lambda ()
        (condition-case err
@@ -8655,7 +8728,8 @@ nil."
                  (:gzip
                   (lsp-gunzip download-path))
                  (:zip (lsp-unzip download-path (f-parent store-path)))
-                 (:targz (lsp-tar-gz-decompress download-path (f-parent store-path))))
+                 (:targz (lsp-tar-gz-decompress download-path (f-parent store-path)))
+                 (:tarxz (lsp-tar-gz-decompress download-path (f-parent store-path)))) ;; NOTE: this function decompresses all tar compressed paths.
                (lsp--info "Decompressed %s..." store-path))
              (funcall callback))
          (error (funcall error-callback err)))))))
@@ -9328,6 +9402,9 @@ IGNORE-MULTI-FOLDER to ignore multi folder server."
   (if (eq 'initialized (lsp--workspace-status workspace))
       ;; when workspace is initialized just call document did open.
       (progn
+        (when-let* ((encoding (lsp:server-capabilities-position-encoding?
+                               (lsp--workspace-server-capabilities workspace))))
+          (lsp--set-position-encoding encoding))
         (with-lsp-workspace workspace
           (when-let* ((before-document-open-fn (-> workspace
                                                   lsp--workspace-client

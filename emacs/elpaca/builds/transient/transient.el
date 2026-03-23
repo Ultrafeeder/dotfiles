@@ -36,6 +36,12 @@
 ;; in Magit.  It is distributed as a separate package, so that it can be
 ;; used to implement similar menus in other packages.
 
+;; You can contact the maintainer of this package by sending an email to
+;; <emacs.transient@jonas.bernoulli.dev>, or you can use the public issue
+;; tracker at <https://github.com/magit/transient>.  The latter can also
+;; be accessed using the `forge' package, which lets you avoid the sadly
+;; non-free javascript on that website.
+
 ;;; Code:
 
 (defconst transient-version "0.12.0")
@@ -129,7 +135,9 @@ from Emacs commit e680827e814e155cf79175d87ff7c6ee3a08b69a."
          ,(macroexp-progn body))
      ((debug error)
       (transient--emergency-exit ,id)
-      (signal (car err) (cdr err)))))
+      (static-if (fboundp 'error-type-p) ; since Emacs 31.1
+          (signal err)
+        (signal (car err) (cdr err))))))
 
 (defun transient--exit-and-debug (&rest args)
   (transient--emergency-exit :debugger)
@@ -212,7 +220,8 @@ If `transient-enable-menu-navigation' is non-nil, which it is by default,
 then \\[transient-backward-button] and \\[transient-forward-button] move \
 from suffix to suffix.  When this option is
 non-nil as well, then they additionally stop at group descriptions.  This
-is useful for blind users, who use a braille or audio output device."
+is useful for visually impaired users, who use a braille or audio output
+device."
   :package-version '(transient . "0.13.0")
   :group 'transient
   :type 'boolean)
@@ -421,6 +430,28 @@ This command is not bound by default, see its docstring for instructions."
   :group 'transient
   :type 'boolean)
 
+(defcustom transient-prefer-reading-value nil
+  "Whether to prefer reading new value over other value selection methods.
+
+If this is nil (the default), then certain arguments are directly
+disabled when they are invoked, while they have a non-nil value.  I.e.,
+to switch from one non-nil value to another non-nil value, such commands
+have to be invoked twice.  For other arguments, which happen to have a
+small set of possible values, all values are displayed at all times,
+using solely coloring to indicate which of the values is active.  When
+such an infix command is invoked it cycles to the next value.
+
+This default does not work for visually impaired user.  If this option
+is non-nil, then more arguments immediately read the new value, instead
+of being toggled off on first invocation, or instead of cycling through
+values.
+
+If you enable this, then `transient-use-accessible-values' should also
+be enabled."
+  :package-version '(transient . "0.13.0")
+  :group 'transient
+  :type 'boolean)
+
 (defcustom transient-highlight-mismatched-keys nil
   "Whether to highlight keys that do not match their argument.
 
@@ -548,6 +579,62 @@ and might otherwise have to scroll in two dimensions. This is also
 useful for blind users, because it causes suffixes to be navigated
 in a more natural order."
   :package-version '(transient . "0.3.6")
+  :group 'transient
+  :type 'boolean)
+
+(defcustom transient-use-accessible-values nil
+  "Whether to show values in a way that does not rely on coloring.
+
+If this is nil (the default), then colors are used to communicate the
+state of arguments.  For certain argument types the state is solely
+communicated that way.  For example, an enabled command-line switch is
+shown using some bright color, and disabling that argument, changes the
+color to gray, without otherwise changing the displayed text.
+
+This default does not work for visually impaired user.  If this option
+is non-nil, then the state is additionally communicated through other
+means.  A switch, for example, is either followed by \"is enabled\" or
+\"is disabled\".  How exactly the state is communicated depends on the
+type of the infix command.
+
+Note that packages, which use Transient, can define their own infix
+command types, which may or may not involve overriding Transient's
+code, which honors this new option.  I.e., it will take some time until
+everything respects this setting.
+
+If you enable this, then `transient-prefer-reading-value' should also
+be enabled.  Also consider enabling `transient-use-accessible-formats'."
+  :package-version '(transient . "0.13.0")
+  :group 'transient
+  :type 'boolean)
+
+(defcustom transient-use-accessible-formats nil
+  "Whether to use a more accessible format strings for menu elements.
+
+If this is non-nil, then menu elements are displayed in a way, that I
+hope, is more suitable for visually impaired users than the default.
+Please provide feedback, so that we can together work on improving this.
+
+By default the format specified by an element's `format' slot is used.
+When this is non-nil, then the `accessible-format' slot is used instead.
+One change implemented in the latter is that for an element representing
+a command-line argument, the argument and its value are moved before the
+description, giving quicker access to the current state, while still
+allowing users to read the description, in case they don't know yet what
+the argument in question does.
+
+Enabling this also causes the string \"inapt\" to be added at the very
+beginning of the text describing a command that currently cannot be
+used.  When using the default format, the only visual clue that a
+command is inapt, is that the complete text representing it is grayed
+out.  (As an example of such an inapt command, consider the case of a
+commands that can only act on the file at point, when there currently
+isn't a file at point.)  Placing the string \"inapt\" at the very
+beginning gives users the opportunity to immediately skip over unusable
+commands, while still giving them the opportunity to read on.
+
+Also consider enabling `transient-use-accessible-values'."
+  :package-version '(transient . "0.13.0")
   :group 'transient
   :type 'boolean)
 
@@ -986,6 +1073,8 @@ predicate slots or more than one `inapt-if*' slots are non-nil."
    (command     :initarg :command)
    (transient   :initarg :transient)
    (format      :initarg :format      :initform " %k %d")
+   (accessible-format
+    :initarg :accessible-format       :initform "%i%k %d")
    (description :initarg :description :initform nil)
    (face        :initarg :face        :initform nil)
    (show-help   :initarg :show-help   :initform nil))
@@ -1015,7 +1104,8 @@ Technically a suffix object with no associated command.")
    (reader      :initarg :reader      :initform nil)
    (prompt      :initarg :prompt      :initform nil)
    (choices     :initarg :choices     :initform nil)
-   (format                            :initform " %k %d (%v)"))
+   (format                            :initform " %k %d (%v)")
+   (accessible-format                 :initform "%i%k %v (%d)"))
   "Transient infix command."
   :abstract t)
 
@@ -1031,7 +1121,8 @@ Technically a suffix object with no associated command.")
 
 (defclass transient-variable (transient-infix)
   ((variable    :initarg :variable)
-   (format                            :initform " %k %d %v"))
+   (format                            :initform " %k %d %v")
+   (accessible-format                 :initform "%i%k %v (%d)"))
   "Abstract superclass for infix commands that set a variable."
   :abstract t)
 
@@ -2529,13 +2620,10 @@ value.  Otherwise return CHILDREN as is.")
       (setq transient--prefix (transient--init-prefix name params))
     (setq name (oref transient--prefix command)))
   (setq transient--refreshp (oref transient--prefix refresh-suffixes))
-  (cond ((and (not transient--refreshp) layout)
-         (setq transient--layout layout)
-         (setq transient--suffixes (transient--flatten-suffixes layout)))
-        (t
-         (setq transient--suffixes nil)
-         (setq transient--layout (transient--init-suffixes name))
-         (setq transient--suffixes (nreverse transient--suffixes))))
+  (setq transient--layout
+        (or (and (not transient--refreshp) layout)
+            (transient--init-suffixes name)))
+  (setq transient--suffixes (transient--flatten-suffixes transient--layout))
   (slot-makeunbound transient--prefix 'value))
 
 (defun transient--init-prefix (name &optional params)
@@ -2555,17 +2643,19 @@ value.  Otherwise return CHILDREN as is.")
     (mapcan (lambda (c) (transient--init-child levels c nil))
             (append (transient--get-children name)
                     (and (not transient--editp)
-                         (transient--get-children 'transient-common-commands))))))
+                         (transient--get-children
+                          'transient-common-commands))))))
 
 (defun transient--flatten-suffixes (layout)
-  (named-let flatten ((def layout))
-    (cond ((stringp def) nil)
-          ((cl-typep def 'transient-information) nil)
-          ((listp def) (mapcan #'flatten def))
-          ((cl-typep def 'transient-group)
-           (mapcan #'flatten (oref def suffixes)))
-          ((cl-typep def 'transient-suffix)
-           (list def)))))
+  (nreverse
+   (named-let flatten ((def layout))
+     (cond ((stringp def) nil)
+           ((cl-typep def 'transient-information) nil)
+           ((listp def) (mapcan #'flatten def))
+           ((cl-typep def 'transient-group)
+            (mapcan #'flatten (oref def suffixes)))
+           ((cl-typep def 'transient-suffix)
+            (list def))))))
 
 (defun transient--init-child (levels spec parent)
   (cl-etypecase spec
@@ -2633,8 +2723,7 @@ value.  Otherwise return CHILDREN as is.")
     (cond ((not (cl-typep obj 'transient-information))
            (transient--init-suffix-key obj)
            (transient-init-scope obj)
-           (transient-init-value obj)
-           (push obj transient--suffixes)))
+           (transient-init-value obj)))
     (list obj)))
 
 (cl-defmethod transient--init-suffix-key ((obj transient-suffix))
@@ -2871,13 +2960,23 @@ value.  Otherwise return CHILDREN as is.")
   (if (not transient--prefix)
       (funcall fn)
     (transient--suspend-override (bound-and-true-p edebug-active))
-    (funcall fn) ; Already unwind protected.
-    (cond ((memq this-command '(top-level abort-recursive-edit))
-           (setq transient--exitp t)
-           (transient--post-exit this-command)
-           (transient--delete-window))
-          (transient--prefix
-           (transient--resume-override)))))
+    (condition-case err
+        (unwind-protect
+            (funcall fn)
+          (cond
+            ((memq this-command '(top-level abort-recursive-edit))
+             (setq transient--exitp t)
+             (transient--post-exit this-command)
+             (transient--delete-window)
+             (transient--debug "     abort recursive-edit and menu "))
+            (transient--prefix
+             (transient--resume-override)
+             (transient--debug "     exit recursive-edit and resumed menu"))))
+      (error (if (and (eq (car err) 'error)
+                      (stringp (cadr err))
+                      (string-prefix-p "Abort" (cadr err)))
+                 (message "%s" (cadr err))
+               (message "transient--recursive-edit: %S" err))))))
 
 (defmacro transient--with-suspended-override (&rest body)
   (let ((depth (make-symbol "depth"))
@@ -3190,7 +3289,11 @@ identifying the exit."
     (transient--post-exit this-command)))
 
 (defun transient--quit-kludge (action)
-  (static-if (boundp 'redisplay-can-quit) ;Emacs 31
+  ;; Fixing the bug that makes this kludge necessary was proposed in
+  ;; https://yhetil.org/emacs-bugs/m1ikl4iqtg.fsf@dancol.org/, but it
+  ;; does not look like that's gonna be merged any time soon.  See also
+  ;; https://github.com/magit/transient/commit/45fbefdc5b112f0a15cd9365.
+  (static-if (boundp 'redisplay-can-quit)
       action
     (pcase-exhaustive action
       ('enable
@@ -3790,7 +3893,7 @@ Call `transient-default-value' but because that is a noop for
               (case-fold-search nil)
               (regexp (if (slot-exists-p obj 'argument-regexp)
                           (oref obj argument-regexp)
-                        (format "\\`%s\\(.*\\)" (oref obj argument)))))
+                        (format "\\`%s\\([^z-a]*\\)\\'" (oref obj argument)))))
           (if (memq multi-value '(t rest))
               (cdr (assoc argument value))
             (let ((match (lambda (v)
@@ -3877,6 +3980,7 @@ it\", in which case it is pointless to preserve history.)"
   (with-slots (value multi-value always-read allow-empty choices) obj
     (if (and value
              (not multi-value)
+             (not transient-prefer-reading-value)
              (not always-read)
              transient--prefix)
         (oset obj value nil)
@@ -3884,7 +3988,9 @@ it\", in which case it is pointless to preserve history.)"
              (reader (oref obj reader))
              (choices (if (functionp choices) (funcall choices) choices))
              (prompt (transient-prompt obj))
-             (value (if multi-value (string-join value ",") value))
+             (value (if (and multi-value value)
+                        (string-join value ",")
+                      value))
              (history-key (or (oref obj history-key)
                               (oref obj command)))
              (transient--history (alist-get history-key transient-history))
@@ -3892,8 +3998,9 @@ it\", in which case it is pointless to preserve history.)"
                                          (eq value (car transient--history)))
                                      transient--history
                                    (cons value transient--history)))
-             (initial-input (and transient-read-with-initial-input
-                                 (car transient--history)))
+             (initial-input (or value
+                                (and transient-read-with-initial-input
+                                     (car transient--history))))
              (history (if initial-input
                           (cons 'transient--history 1)
                         'transient--history))
@@ -3921,16 +4028,24 @@ it\", in which case it is pointless to preserve history.)"
 
 (cl-defmethod transient-infix-read ((obj transient-switch))
   "Toggle the switch on or off."
-  (if (oref obj value) nil (oref obj argument)))
+  (prog1 (if (oref obj value) nil (oref obj argument))
+    (when transient-prefer-reading-value
+      (message "%s is now %s"
+               (oref obj argument)
+               (if (oref obj value) "enabled" "disabled")))))
 
 (cl-defmethod transient-infix-read ((obj transient-switches))
   "Cycle through the mutually exclusive switches.
 The last value is \"don't use any of these switches\"."
   (let ((choices (mapcar (apply-partially #'format (oref obj argument-format))
                          (oref obj choices))))
-    (if-let ((value (oref obj value)))
-        (cadr (member value choices))
-      (car choices))))
+    (cond-let
+      (transient-prefer-reading-value
+       (let ((choice (completing-read (transient-prompt obj) choices nil t)))
+         (if (equal choice "") nil choice)))
+      ([value (oref obj value)]
+       (cadr (member value choices)))
+      ((car choices)))))
 
 (cl-defmethod transient-infix-read ((command symbol))
   "Elsewhere use the reader of the infix command COMMAND.
@@ -3988,6 +4103,20 @@ stand-alone command."
   (when (fboundp 'org-read-date)
     (org-read-date 'with-time nil nil prompt default-time)))
 
+(static-if (fboundp 'string-edit) ; since Emacs 29.1
+    (defun transient-read-string-from-buffer (prompt value _)
+      "Switch to a new buffer to edit STRING in a recursive edit.
+Like `read-string-from-buffer' but accept an additional argument as
+provided by `transient-infix-read' (but ignore it).  Only available
+when using Emacs 29.1 or greater."
+      (string-edit prompt (or value "")
+                   (lambda (edited)
+                     (setq value edited)
+                     (exit-recursive-edit))
+                   :abort-callback #'exit-recursive-edit)
+      (recursive-edit)
+      value))
+
 ;;;; Prompt
 
 (cl-defgeneric transient-prompt (obj)
@@ -4020,8 +4149,9 @@ prompt."
        (if (stringp prompt)
            prompt
          "[BUG: invalid prompt]: ")))
-    ([name (or (and (slot-boundp obj 'argument) (oref obj argument))
-               (and (slot-boundp obj 'variable) (oref obj variable)))]
+    ([name
+      (or (ignore-error (invalid-slot-name unbound-slot) (oref obj argument))
+          (ignore-error (invalid-slot-name unbound-slot) (oref obj variable)))]
      (if (and (stringp name)
               (string-suffix-p "=" name))
          name
@@ -4479,7 +4609,7 @@ have a history of their own.")
                             'transient-display-buffer-action))
                (transient-display-buffer-action))))
     (when (and (assq 'pop-up-frame-parameters (cdr action))
-               (fboundp 'buffer-line-statistics)) ; Emacs >= 28.1
+               (fboundp 'buffer-line-statistics)) ; since Emacs 28.1
       (setq action (copy-tree action))
       (pcase-let ((`(,height ,width)
                    (buffer-line-statistics transient--buffer))
@@ -4765,28 +4895,24 @@ as a button."
   "Return a string generated using OBJ's `format'.
 %k is formatted using `transient-format-key'.
 %d is formatted using `transient-format-description'.
-%v is formatted using `transient-format-value'."
-  (static-if (>= emacs-major-version 29)
-      (format-spec (oref obj format)
-                   `((?k . ,(lambda () (transient-format-key obj)))
-                     (?d . ,(lambda () (transient-format-description obj)))
-                     (?v . ,(lambda () (transient-format-value obj)))))
-    (format-spec (oref obj format)
-                 `((?k . ,(transient-format-key obj))
-                   (?d . ,(transient-format-description obj))
-                   (?v . ,(transient-format-value obj))))))
+%v is formatted using `transient-format-value'.
+%i is formatted using `transient-format-inapt'."
+  (format-spec (transient--get-format obj)
+               `((?k . ,(transient-format-key obj))
+                 (?d . ,(transient-format-description obj))
+                 (?v . ,(transient-format-value obj))
+                 (?i . ,(transient-format-inapt obj)))))
+
 
 (cl-defmethod transient-format ((obj transient-suffix))
   "Return a string generated using OBJ's `format'.
 %k is formatted using `transient-format-key'.
-%d is formatted using `transient-format-description'."
-  (static-if (>= emacs-major-version 29)
-      (format-spec (oref obj format)
-                   `((?k . ,(lambda () (transient-format-key obj)))
-                     (?d . ,(lambda () (transient-format-description obj)))))
-    (format-spec (oref obj format)
-                 `((?k . ,(transient-format-key obj))
-                   (?d . ,(transient-format-description obj))))))
+%d is formatted using `transient-format-description'.
+%i is formatted using `transient-format-inapt'."
+  (format-spec (transient--get-format obj)
+               `((?k . ,(transient-format-key obj))
+                 (?d . ,(transient-format-description obj))
+                 (?i . ,(transient-format-inapt obj)))))
 
 (cl-defgeneric transient-format-key (obj)
   "Format OBJ's `key' for display and return the result.")
@@ -4929,55 +5055,84 @@ apply the face `transient-unreachable' to the complete string."
   "Format OBJ's value for display and return the result.")
 
 (cl-defmethod transient-format-value ((obj transient-suffix))
-  (propertize (oref obj argument)
-              'face (if (oref obj value)
-                        (if (oref obj inapt)
-                            'transient-inapt-argument
-                          'transient-argument)
-                      'transient-inactive-argument)))
+  (with-slots (argument value inapt) obj
+    (concat (propertize argument 'face (transient-argument-face obj))
+            (cond ((not transient-use-accessible-values) nil)
+                  (inapt " is inapt")
+                  (value " is enabled")
+                  (t     " is disabled")))))
 
 (cl-defmethod transient-format-value ((obj transient-option))
-  (let ((argument (prin1-to-string (oref obj argument) t)))
+  (let ((argument (prin1-to-string (oref obj argument) t))
+        (aface (transient-argument-face obj))
+        (vface (transient-value-face obj)))
     (if-let ((value (oref obj value)))
-        (let* ((inapt (oref obj inapt))
-               (aface (if inapt 'transient-inapt-argument 'transient-argument))
-               (vface (if inapt 'transient-inapt-argument 'transient-value)))
-          (pcase-exhaustive (oref obj multi-value)
-            ('nil
-             (concat (propertize argument 'face aface)
-                     (propertize value    'face vface)))
-            ((or 't 'rest)
-             (concat (propertize (if (string-suffix-p " " argument)
-                                     argument
-                                   (concat argument " "))
-                                 'face aface)
-                     (propertize (mapconcat #'prin1-to-string value " ")
-                                 'face vface)))
-            ('repeat
-             (mapconcat (lambda (value)
-                          (concat (propertize argument 'face aface)
-                                  (propertize value    'face vface)))
-                        value " "))))
-      (propertize argument 'face 'transient-inactive-argument))))
+        (pcase-exhaustive (oref obj multi-value)
+          ('nil
+           (concat (propertize argument 'face aface)
+                   (propertize value    'face vface)))
+          ((or 't 'rest)
+           (concat (propertize (if (string-suffix-p " " argument)
+                                   argument
+                                 (concat argument " "))
+                               'face aface)
+                   (propertize (mapconcat #'prin1-to-string value " ")
+                               'face vface)))
+          ('repeat
+           (mapconcat (lambda (value)
+                        (concat (propertize argument 'face aface)
+                                (propertize value    'face vface)))
+                      value " ")))
+      (concat (propertize (if (string-suffix-p "=" argument)
+                              (substring argument 0 -1)
+                            argument)
+                          'face aface)
+              (and transient-use-accessible-values " is disabled")))))
 
 (cl-defmethod transient-format-value ((obj transient-switches))
-  (with-slots (value argument-format choices) obj
-    (format (propertize argument-format
-                        'face (if value
-                                  'transient-argument
-                                'transient-inactive-argument))
-            (format
-             (propertize "[%s]" 'face 'transient-delimiter)
-             (mapconcat
-              (lambda (choice)
-                (propertize choice 'face
-                            (if (equal (format argument-format choice) value)
-                                (if (oref obj inapt)
-                                    'transient-inapt-argument
-                                  'transient-value)
-                              'transient-inactive-value)))
-              choices
-              (propertize "|" 'face 'transient-delimiter))))))
+  (pcase-let (((eieio value argument-format choices) obj)
+              (face (transient-argument-face obj)))
+    (cond
+      ((not transient-use-accessible-values)
+       (format (propertize argument-format 'face face)
+               (format
+                (propertize "[%s]" 'face 'transient-delimiter)
+                (mapconcat
+                 (lambda (choice)
+                   (propertize choice 'face
+                               (transient-value-face
+                                obj
+                                (equal (format argument-format choice) value))))
+                 choices
+                 (propertize "|" 'face 'transient-delimiter)))))
+      (value (propertize value 'face face))
+      ((format "No %s argument is enabled"
+               (propertize (string-replace "%s" "*" argument-format)
+                           'face face))))))
+
+(cl-defmethod transient-format-inapt ((obj transient-suffix))
+  "If OBJ is currently inapt, return \"inapt \", else the empty string."
+  (if (oref obj inapt) "inapt " ""))
+
+(defun transient-argument-face (obj)
+  (if (oref obj value)
+      (if (oref obj inapt)
+          'transient-inapt-argument
+        'transient-argument)
+    'transient-inactive-argument))
+
+(cl-defun transient-value-face (obj &optional (active nil sactive))
+  (if (if sactive active (oref obj value))
+      (if (oref obj inapt)
+          ;; transient-inapt-value does not exist
+          'transient-inapt-argument
+        'transient-value)
+    'transient-inactive-value))
+
+(cl-defmethod transient--get-format ((obj transient-suffix))
+  (if transient-use-accessible-formats
+      (oref obj accessible-format)
+    (oref obj format)))
 
 (cl-defmethod transient--get-description ((obj transient-child))
   (cond-let*
@@ -5161,7 +5316,8 @@ Select the help window, and make the help buffer current and return it."
           (cons (lambda () (setq buffer (current-buffer)))
                 temp-buffer-window-setup-hook)))
     (describe-function fn)
-    (set-buffer buffer)))
+    (when buffer
+      (set-buffer buffer))))
 
 (defun transient--show-manual (manual)
   (info manual))
@@ -5593,7 +5749,8 @@ as stand-in for elements of exhausted lists."
 ;;;; `transient-cons-option'
 
 (defclass transient-cons-option (transient-option)
-  ((format :initform " %k %d: %v"))
+  ((format            :initform " %k %d: %v")
+   (accessible-format :initform "%i%k %d is %v"))
   "[Experimental] Class used for unencoded key-value pairs.")
 
 (cl-defmethod transient-infix-value ((obj transient-cons-option))
@@ -5609,9 +5766,11 @@ as stand-in for elements of exhausted lists."
           description))))
 
 (cl-defmethod transient-format-value ((obj transient-cons-option))
-  (let ((value (oref obj value)))
-    (propertize (prin1-to-string value t) 'face
-                (if value 'transient-value 'transient-inactive-value))))
+  (with-slots (value) obj
+    (if (or value (not transient-use-accessible-values))
+        (propertize (prin1-to-string value t)
+                    'face (transient-argument-face obj))
+      "unset")))
 
 ;;; _
 (provide 'transient)

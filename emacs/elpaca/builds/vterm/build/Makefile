@@ -48,10 +48,10 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /nix/store/zvv5mgim105vb0qp3m44r46iym2h8l3y-cmake-4.1.2/bin/cmake
+CMAKE_COMMAND = /nix/store/dx1zhzy951phnqyixy0z77s0gcp6wc2z-cmake-4.1.2/bin/cmake
 
 # The command to remove a file.
-RM = /nix/store/zvv5mgim105vb0qp3m44r46iym2h8l3y-cmake-4.1.2/bin/cmake -E rm -f
+RM = /nix/store/dx1zhzy951phnqyixy0z77s0gcp6wc2z-cmake-4.1.2/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
@@ -68,7 +68,7 @@ CMAKE_BINARY_DIR = /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/build
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
-	/nix/store/zvv5mgim105vb0qp3m44r46iym2h8l3y-cmake-4.1.2/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	/nix/store/dx1zhzy951phnqyixy0z77s0gcp6wc2z-cmake-4.1.2/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -78,7 +78,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake to regenerate build system..."
-	/nix/store/zvv5mgim105vb0qp3m44r46iym2h8l3y-cmake-4.1.2/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/nix/store/dx1zhzy951phnqyixy0z77s0gcp6wc2z-cmake-4.1.2/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache

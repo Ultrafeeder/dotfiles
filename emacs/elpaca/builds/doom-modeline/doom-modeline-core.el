@@ -904,7 +904,7 @@ Also see the face `doom-modeline-unread-number'."
   :group 'doom-modeline-faces)
 
 (defface doom-modeline-bar-inactive
-  `((t (:inherit doom-modeline)))
+  `((t ()))
   "The face used for the left-most bar in the mode-line of an inactive window."
   :group 'doom-modeline-faces)
 
@@ -1092,7 +1092,7 @@ Which are not explicitly listed in `doom-modeline-vcs-state-faces-alist'."
   :group 'doom-modeline-faces)
 
 (defface doom-modeline-battery-normal
-  '((t (:inherit (doom-modeline mode-line))))
+  '((t (:inherit doom-modeline)))
   "Face for battery normal status."
   :group 'doom-modeline-faces)
 
@@ -1109,11 +1109,6 @@ Which are not explicitly listed in `doom-modeline-vcs-state-faces-alist'."
 (defface doom-modeline-battery-error
   '((t (:inherit doom-modeline-urgent)))
   "Face for battery error status."
-  :group 'doom-modeline-faces)
-
-(defface doom-modeline-buffer-timemachine
-  '((t (:inherit doom-modeline-buffer-file :slant italic)))
-  "Face for timemachine status."
   :group 'doom-modeline-faces)
 
 (defface doom-modeline-time
@@ -1217,10 +1212,8 @@ used as an advice to window creation functions."
 
 ;; Keep `doom-modeline-current-window' up-to-date
 (defun doom-modeline--selected-window (&optional frame)
-  "Get the selected window of FRAME but should exclude the child windows."
-  (if (and (fboundp 'frame-parent) (frame-parent frame))
-      (frame-selected-window (frame-parent frame))
-    (frame-selected-window frame)))
+  "Get the selected window of FRAME."
+  (frame-selected-window frame))
 
 (defvar doom-modeline-current-window (doom-modeline--selected-window)
   "Current window.")
@@ -1267,8 +1260,11 @@ used as an advice to window creation functions."
 ;; Core
 ;;
 
-(defvar doom-modeline-fn-alist ())
-(defvar doom-modeline-var-alist ())
+(defvar doom-modeline--fn-alist ())
+(defvar doom-modeline--var-alist ())
+(defvar doom-modeline--modelines ()
+  "Alist of modeline definitions.
+Each element is (NAME . ((lhs-segments...) (rhs-segments...))).")
 
 (defmacro doom-modeline-def-segment (name &rest body)
   "Define a modeline segment NAME with BODY and byte compiles it."
@@ -1279,11 +1275,11 @@ used as an advice to window creation functions."
                      (format "%s modeline segment" name))))
     (cond ((and (symbolp (car body))
                 (not (cdr body)))
-           `(add-to-list 'doom-modeline-var-alist (cons ',name ',(car body))))
+           `(add-to-list 'doom-modeline--var-alist (cons ',name ',(car body))))
           (t
            `(progn
               (defun ,sym () ,docstring ,@body)
-              (add-to-list 'doom-modeline-fn-alist (cons ',name ',sym))
+              (add-to-list 'doom-modeline--fn-alist (cons ',name ',sym))
               ,(unless (bound-and-true-p byte-compile-current-file)
                  `(let (byte-compile-warnings)
                     (unless (and (fboundp 'subr-native-elisp-p)
@@ -1297,9 +1293,9 @@ used as an advice to window creation functions."
       (cond ((stringp seg)
              (push seg forms))
             ((symbolp seg)
-             (cond ((setq it (alist-get seg doom-modeline-fn-alist))
+             (cond ((setq it (alist-get seg doom-modeline--fn-alist))
                     (push (list :eval (list it)) forms))
-                   ((setq it (alist-get seg doom-modeline-var-alist))
+                   ((setq it (alist-get seg doom-modeline--var-alist))
                     (push it forms))
                    ((error "%s is not a defined segment" seg))))
             ((error "%s is not a valid segment" seg))))
@@ -1316,6 +1312,11 @@ Example:
     \\='(bar matches \" \" buffer-info)
     \\='(media-info major-mode))
   (doom-modeline-set-modeline \\='minimal t)"
+  ;; Register the modeline definition for runtime manipulation
+  (let ((def (assq name doom-modeline--modelines)))
+    (if def
+        (setcdr def (list lhs rhs))
+      (push (cons name (list lhs rhs)) doom-modeline--modelines)))
   (let ((sym (intern (format "doom-modeline-format--%s" name)))
         (lhs-forms (doom-modeline--prepare-segments lhs))
         (rhs-forms (doom-modeline--prepare-segments rhs)))
@@ -1374,6 +1375,101 @@ If DEFAULT is non-nil, set the default mode-line for all buffers."
             mode-line-format)
           (list "%e" modeline))))
 
+;;
+;; Modeline Segment Management
+;;
+
+(defcustom doom-modeline-excluded-modelines nil
+  "List of modeline names to exclude from `doom-modeline-add-segment'.
+These modelines will not be modified when adding segments programmatically."
+  :type '(repeat symbol)
+  :group 'doom-modeline)
+
+(defun doom-modeline--insert-segment-in-list (list anchor segment position)
+  "Insert SEGMENT in LIST relative to ANCHOR at POSITION.
+POSITION can be :before or :after.
+Returns the modified list."
+  (cond ((null list) (list segment))
+        ((eq (car list) anchor)
+         (if (eq position :before)
+             (cons segment list)
+           (cons anchor (cons segment (cdr list)))))
+        (t
+         (cons (car list)
+               (doom-modeline--insert-segment-in-list (cdr list) anchor segment position)))))
+
+(defun doom-modeline--remove-segment-from-list (list segment)
+  "Remove SEGMENT from LIST.
+Returns the modified list."
+  (cond ((null list) nil)
+        ((eq (car list) segment)
+         (doom-modeline--remove-segment-from-list (cdr list) segment))
+        (t
+         (cons (car list)
+               (doom-modeline--remove-segment-from-list (cdr list) segment)))))
+
+(defun doom-modeline-add-segment (segment anchor &optional position modeline)
+  "Add SEGMENT to modeline(s) relative to ANCHOR segment.
+SEGMENT is the segment name to add (a symbol).
+ANCHOR is the segment name to anchor to (a symbol).
+POSITION can be :before or :after (default: :after).
+MODELINE can be a modeline name (symbol) to add to a specific modeline,
+or nil/'all to add to all modelines (respecting
+`doom-modeline-excluded-modelines').
+
+Modelines listed in `doom-modeline-excluded-modelines' are not modified
+when adding to all modelines."
+  (let ((modelines (if (or (null modeline) (eq modeline 'all))
+                       doom-modeline--modelines
+                     (list (assq modeline doom-modeline--modelines)))))
+    (dolist (modeline-def modelines)
+      (when modeline-def
+        (pcase-let ((`(,name . (,lhs ,rhs)) modeline-def))
+          (unless (memq name doom-modeline-excluded-modelines)
+            (let ((new-lhs lhs)
+                  (new-rhs rhs))
+              ;; Try to add to LHS
+              (when (memq anchor lhs)
+                (setq new-lhs (doom-modeline--insert-segment-in-list lhs anchor segment
+                                                                     (or position :after))))
+              ;; Try to add to RHS
+              (when (memq anchor rhs)
+                (setq new-rhs (doom-modeline--insert-segment-in-list rhs anchor segment
+                                                                     (or position :after))))
+              ;; Only redefine if at least one list was modified
+              (when (or (not (eq new-lhs lhs))
+                        (not (eq new-rhs rhs)))
+                (doom-modeline-def-modeline name new-lhs new-rhs)))))))))
+
+(defun doom-modeline-remove-segment (segment &optional modeline)
+  "Remove SEGMENT from modeline(s).
+SEGMENT is the segment name to remove (a symbol).
+MODELINE can be a modeline name (symbol) to remove from a specific modeline,
+or nil/'all to remove from all modelines (respecting
+`doom-modeline-excluded-modelines').
+
+Modelines listed in `doom-modeline-excluded-modelines' are not modified
+when removing segments programmatically."
+  (let ((modelines (if (or (null modeline) (eq modeline 'all))
+                       doom-modeline--modelines
+                     (list (assq modeline doom-modeline--modelines)))))
+    (dolist (modeline-def modelines)
+      (when modeline-def
+        (pcase-let ((`(,name . (,lhs ,rhs)) modeline-def))
+          (unless (memq name doom-modeline-excluded-modelines)
+            (let ((new-lhs lhs)
+                  (new-rhs rhs))
+              ;; Try to remove from LHS
+              (when (memq segment lhs)
+                (setq new-lhs (doom-modeline--remove-segment-from-list lhs segment)))
+              ;; Try to remove from RHS
+              (when (memq segment rhs)
+                (setq new-rhs (doom-modeline--remove-segment-from-list rhs segment)))
+              ;; Only redefine if at least one list was modified
+              (when (or (not (eq new-lhs lhs))
+                        (not (eq new-rhs rhs)))
+                (doom-modeline-def-modeline name new-lhs new-rhs)))))))))
+
 
 ;;
 ;; Helpers
@@ -1402,16 +1498,17 @@ If DEFAULT is non-nil, set the default mode-line for all buffers."
 IF FACE is nil, `mode-line' face will be used.
 If INACTIVE-FACE is nil, `mode-line-inactive' face will be used."
   (if (doom-modeline--active)
-      (or (and (facep face) `(:inherit (doom-modeline ,face)))
-          (and (facep 'mode-line-active) '(:inherit (doom-modeline mode-line-active)))
-          '(:inherit (doom-modeline mode-line)))
-    (or (and (facep inactive-face) `(:inherit (doom-modeline ,inactive-face)))
-        '(:inherit (doom-modeline mode-line-inactive)))))
+      `(:inherit (doom-modeline
+                  ,(cond ((facep face) face)
+                         ((facep 'mode-line-active) 'mode-line-active)
+                         (t 'mode-line))))
+    `(:inherit (doom-modeline
+                ,(if (facep inactive-face) inactive-face
+                   'mode-line-inactive)))))
 
 (defun doom-modeline-spc-face (&optional face)
   "Apply FACE or `doom-modeline-spc-face-overrides' to `doom-modeline-face'."
-  (append `(:inherit ,(doom-modeline-face))
-          (or face doom-modeline-spc-face-overrides)))
+  `(:inherit (,(doom-modeline-face) ,face ,doom-modeline-spc-face-overrides)))
 
 (defun doom-modeline-string-pixel-width (str)
   "Return the width of STR in pixels."
@@ -1442,9 +1539,12 @@ The result is cached per-frame to avoid expensive calculations during redisplay.
       ;; Else, recalculate and update cache for this frame
       (let* ((base-char-height (window-font-height nil 'mode-line)) ; Use window-font-height in the context of the frame/window
              (new-height (round
-                          (* 1.0 (cond ((integerp current-face-height-attr) (/ current-face-height-attr 10.0)) ; Ensure float division
-                                       ((floatp current-face-height-attr) (* current-face-height-attr base-char-height))
-                                       (t base-char-height))))))
+                          (* 1.0 (cond
+                                  ((integerp current-face-height-attr)
+                                   (/ current-face-height-attr 10.0)) ; Ensure float division
+                                  ((floatp current-face-height-attr)
+                                   (* current-face-height-attr base-char-height))
+                                  (t base-char-height))))))
         ;; Update cache for the current frame
         (puthash frame (cons new-height current-face-height-attr) doom-modeline--font-height-cache)
         new-height))))

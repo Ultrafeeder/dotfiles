@@ -71,6 +71,8 @@
   (cl-pushnew 'orig-rev eieio--known-slot-names)
   (cl-pushnew 'number eieio--known-slot-names))
 
+(defvar crm-prompt) ; Emacs 31.1
+
 ;;; Options
 
 ;; For now this is shared between `magit-process' and `magit-git'.
@@ -433,22 +435,6 @@ to do the following.
   "Execute Git with ARGS, returning t if its exit code is 1."
   (= (magit-git-exit-code args) 1))
 
-(defun magit-git-string-p (&rest args)
-  "Execute Git with ARGS, returning the first line of its output.
-If the exit code isn't zero or if there is no output, then return
-nil.  Neither of these results is considered an error; if that is
-what you want, then use `magit-git-string-ng' instead.
-
-This is an experimental replacement for `magit-git-string', and
-still subject to major changes."
-  (magit--with-refresh-cache (cons default-directory args)
-    (magit--with-temp-process-buffer
-      (and (zerop (magit-process-git t args))
-           (not (bobp))
-           (progn
-             (goto-char (point-min))
-             (buffer-substring-no-properties (point) (line-end-position)))))))
-
 (defun magit-git-string-ng (&rest args)
   "Execute Git with ARGS, returning the first line of its output.
 If the exit code isn't zero or if there is no output, then that
@@ -458,7 +444,7 @@ buffer (creating it if necessary) and the error message is shown
 in the status buffer (provided it exists).
 
 This is an experimental replacement for `magit-git-string', and
-still subject to major changes.  Also see `magit-git-string-p'."
+still subject to major changes."
   (magit--with-refresh-cache
       (list default-directory 'magit-git-string-ng args)
     (magit--with-temp-process-buffer
@@ -525,9 +511,9 @@ signal `magit-invalid-git-boolean'."
 
 (defun magit-git-config-p (variable &optional default)
   "Return the boolean value of the Git variable VARIABLE.
-VARIABLE has to be specified as a string.  Return DEFAULT (which
-defaults to nil) if VARIABLE is unset.  If VARIABLE's value isn't
-a boolean, then raise an error."
+VARIABLE has to be specified as a string.  If VARIABLE is unset,
+return nil by default, unless DEFAULT is non-nil, in which case
+return t.  Signal an error if VARIABLE is set but not a boolean."
   (let ((args (list "config" "--bool" "--default" (if default "true" "false")
                     variable)))
     (magit--with-refresh-cache (cons default-directory args)
@@ -590,16 +576,18 @@ insert the run command and stderr into the process buffer."
        (match-str 1)))
 
 (defun magit-git-string (&rest args)
-  "Execute Git with ARGS, returning the first line of its output.
-If there is no output, return nil.  If the output begins with a
-newline, return an empty string."
+  "Execute Git with ARGS, returning the first line of its output (stdout).
+If the exit code isn't zero or if there is no output, then return nil.
+Neither of these results is considered an error; if that is what you
+want, then use `magit-git-string-ng' instead."
   (setq args (flatten-tree args))
   (magit--with-refresh-cache (cons default-directory args)
     (magit--with-temp-process-buffer
-      (apply #'magit-git-insert args)
-      (unless (bobp)
-        (goto-char (point-min))
-        (buffer-substring-no-properties (point) (line-end-position))))))
+      (and (zerop (apply #'magit-git-insert args))
+           (not (bobp))
+           (progn
+             (goto-char (point-min))
+             (buffer-substring-no-properties (point) (line-end-position)))))))
 
 (defun magit-git-lines (&rest args)
   "Execute Git with ARGS, returning its output as a list of lines.
@@ -1018,9 +1006,7 @@ returning the truename."
 
 (define-error 'magit-outside-git-repo "Not inside Git repository")
 (define-error 'magit-corrupt-git-config "Corrupt Git configuration")
-(define-error 'magit-git-executable-not-found
-              (concat "Git executable cannot be found "
-                      "(see https://magit.vc/goto/e6a78ed2)"))
+(define-error 'magit-git-executable-not-found "Git executable cannot be found")
 
 (defun magit--assert-usable-git ()
   (if (not (executable-find (magit-git-executable) t))
@@ -1120,8 +1106,8 @@ tracked file."
       (file-relative-name file dir))))
 
 (defun magit-file-ignored-p (file)
-  (magit-git-string-p "ls-files" "--others" "--ignored" "--exclude-standard"
-                      "--" (magit-convert-filename-for-git file)))
+  (magit-git-string "ls-files" "--others" "--ignored" "--exclude-standard"
+                    "--" (magit-convert-filename-for-git file)))
 
 (defun magit-file-tracked-p (file)
   (magit-git-success "ls-files" "--error-unmatch"
@@ -1343,6 +1329,28 @@ Sorted from longest to shortest CYGWIN name."
       (and (derived-mode-p 'magit-log-mode)
            (car magit-buffer-log-files))))
 
+;;; Blobs
+
+(defun magit-blob-oid (rev file)
+  (if (equal rev "{index}")
+      (cadr (car (magit--file-index-stages file)))
+    (magit-git-string "ls-tree" "--object-only" rev "--"
+                      (magit-convert-filename-for-git file))))
+
+(defun magit--file-index-stages (file)
+  (mapcar (##split-string % " ")
+          (magit-git-lines "ls-files" "--stage" "--"
+                           (magit-convert-filename-for-git file))))
+
+(defun magit--insert-blob-contents (rev file)
+  (let ((coding-system-for-read (or coding-system-for-read 'undecided)))
+    (magit-git-insert "cat-file" "-p"
+                      (if (equal rev "{index}")
+                          (concat ":" file)
+                        (concat rev ":" file)))
+    (setq buffer-file-coding-system last-coding-system-used)
+    nil))
+
 ;;; Predicates
 
 (defun magit-no-commit-p ()
@@ -1440,21 +1448,28 @@ string \"true\", otherwise return nil."
   (equal (magit-git-str "rev-parse" args) "true"))
 
 (defun magit-rev-verify (rev)
-  (magit-git-string-p "rev-parse" "--verify" rev))
+  (magit-git-string "rev-parse" "--verify" rev))
 
 (defun magit-commit-p (rev)
-  "Return full hash for REV if it names an existing commit."
+  "Return commit oid for REV if it can be dereferences as a commit.
+Otherwise return nil.  Use `magit-commit-oid' if you actually need
+the oid; eventually this function will return t instead of the oid."
+  ;; TODO Return t instead of the oid.
   (magit-rev-verify (magit--rev-dereference rev)))
 
-(defalias 'magit-rev-verify-commit #'magit-commit-p)
-
-(defalias 'magit-rev-hash #'magit-commit-p)
+(defun magit-commit-oid (rev &optional noerror)
+  "Return commit oid for REV if it can be dereferences as a commit.
+Otherwise signal an error, or return nil, if optional NOERROR is non-nil."
+  (cond ((magit-rev-verify (magit--rev-dereference rev)))
+        (noerror nil)
+        ((error "%s cannot be dereferenced as a commit" rev))))
 
 (defun magit--rev-dereference (rev)
   "Return a rev that forces Git to interpret REV as a commit.
-If REV is nil or has the form \":/TEXT\", return REV itself."
+Do so by appending \"^{commit}\"; see \"--verify\" in git-rev-parse(1).
+However, if REV is nil or has the form \":/TEXT\", return REV itself."
   (cond ((not rev) nil)
-        ((string-match-p "^:/" rev) rev)
+        ((string-prefix-p ":/" rev) rev)
         ((concat rev "^{commit}"))))
 
 (defun magit-rev-equal (a b)
@@ -1463,8 +1478,8 @@ If REV is nil or has the form \":/TEXT\", return REV itself."
 
 (defun magit-rev-eq (a b)
   "Return t if A and B refer to the same commit."
-  (let ((a (magit-commit-p a))
-        (b (magit-commit-p b)))
+  (let ((a (magit-commit-oid a t))
+        (b (magit-commit-oid b t)))
     (and a b (equal a b))))
 
 (defun magit-rev-ancestor-p (a b)
@@ -1472,11 +1487,9 @@ If REV is nil or has the form \":/TEXT\", return REV itself."
   (magit-git-success "merge-base" "--is-ancestor" a b))
 
 (defun magit-rev-head-p (rev)
+  "Return t if REV can be dereferences as the `HEAD' commit."
   (or (equal rev "HEAD")
-      (and rev
-           (not (string-search ".." rev))
-           (equal (magit-rev-parse rev)
-                  (magit-rev-parse "HEAD")))))
+      (magit-rev-eq rev "HEAD")))
 
 (defun magit-rev-author-p (rev)
   "Return t if the user is the author of REV.
@@ -2581,15 +2594,18 @@ and this option only controls what face is used.")
               (list beg end sep)))))
 
 (defun magit-hash-range (range)
+  "Return a string with the revisions in RANGE replaced with commit oids.
+Either side of RANGE may be omitted, and RANGE may be just a revision.
+If either revision cannot be dereferenced as a commit, signal an error."
   (if (string-match magit-range-re range)
       (magit-bind-match-strings (beg sep end) range
         (and (or beg end)
-             (let ((beg-hash (and beg (magit-rev-hash beg)))
-                   (end-hash (and end (magit-rev-hash end))))
-               (and (or (not beg) beg-hash)
-                    (or (not end) end-hash)
-                    (concat beg-hash sep end-hash)))))
-    (magit-rev-hash range)))
+             (let ((beg-oid (and beg (magit-commit-oid beg)))
+                   (end-oid (and end (magit-commit-oid end))))
+               (and (or (not beg) beg-oid)
+                    (or (not end) end-oid)
+                    (concat beg-oid sep end-oid)))))
+    (magit-commit-oid range)))
 
 (defvar magit-revision-faces
   '(magit-hash
@@ -2643,7 +2659,7 @@ and this option only controls what face is used.")
         (and (not (equal string "@"))
              (or (and (>= (length string) 7)
                       (string-match-p "[a-z]" string)
-                      (magit-commit-p string))
+                      (magit-commit-oid string t))
                  (and (magit-ref-p string)
                       (member (get-text-property (point) 'face)
                               magit-revision-faces)))
@@ -2727,10 +2743,11 @@ and this option only controls what face is used.")
       (lambda ()
         (magit--minibuf-default-add-commit)
         (setq-local crm-separator "\\.\\.\\.?"))
-    (magit-completing-read-multiple
-     (concat prompt ": ")
-     (magit-list-refnames)
-     nil 'any nil 'magit-revision-history default nil t)))
+    (let ((crm-prompt "%p"))
+      (magit-completing-read-multiple
+       (concat prompt ": ")
+       (magit-list-refnames)
+       nil 'any nil 'magit-revision-history default nil t))))
 
 (defun magit-read-remote-branch
     (prompt &optional remote default local-branch require-match)
@@ -2809,6 +2826,23 @@ and this option only controls what face is used.")
     (minibuffer-with-setup-hook #'magit--minibuf-default-add-commit
       (magit-completing-read prompt (delete exclude (magit-list-refnames))
                              nil 'any nil 'magit-revision-history default))))
+
+(defun magit-read-other-branches-or-commits
+    (prompt &optional exclude secondary-default)
+  (let* ((current (magit-get-current-branch))
+         (atpoint (magit-branch-or-commit-at-point))
+         (exclude (or exclude current))
+         (default (or (and (not (equal atpoint exclude))
+                           (not (and (not current)
+                                     (magit-rev-equal atpoint "HEAD")))
+                           atpoint)
+                      (and (not (equal current exclude)) current)
+                      secondary-default
+                      (magit-get-previous-branch))))
+    (minibuffer-with-setup-hook #'magit--minibuf-default-add-commit
+      (magit-completing-read-multiple
+       prompt (delete exclude (magit-list-refnames))
+       nil 'any nil 'magit-revision-history default))))
 
 (defun magit-read-other-local-branch
     (prompt &optional exclude secondary-default)
@@ -2991,6 +3025,18 @@ out.  Only existing branches can be selected."
       (server-send-string client msg))))
 
 ;;; _
+
+(define-obsolete-function-alias 'magit-git-string-p
+  #'magit-git-string "Magit 4.6.0")
+
+(define-obsolete-function-alias 'magit-rev-verify-commit
+  #'magit-commit-p "Magit 4.6.0")
+
+(define-obsolete-function-alias 'magit-rev-hash
+  #'magit-commit-p "Magit 4.6.0"
+  "Return oid for REV if it names an existing commit, nil otherwise.
+Instead use `magit-commit-p' or `magit-commit-oid'.")
+
 (provide 'magit-git)
 ;; Local Variables:
 ;; read-symbol-shorthands: (

@@ -1,0 +1,6 @@
+[Common]
+RoundedCorners=false
+
+[Windeco]
+ButtonSize=ButtonSmall
+DrawBorderOnMaximizedWindows=true
