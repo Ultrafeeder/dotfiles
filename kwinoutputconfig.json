@@ -3,81 +3,61 @@
         "data": [
             {
                 "allowDdcCi": true,
-                "allowSdrSoftwareBrightness": false,
-                "autoBrightnessCurve": [
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0
-                ],
+                "allowSdrSoftwareBrightness": true,
                 "autoRotation": "InTabletMode",
-                "automaticBrightness": false,
                 "brightness": 1,
                 "colorPowerTradeoff": "PreferEfficiency",
                 "colorProfileSource": "sRGB",
-                "connectorName": "eDP-2",
+                "connectorName": "DP-2",
                 "detectedDdcCi": false,
-                "edidHash": "a35951bdb7ea334aadeca4d9c9c5baef",
-                "edidIdentifier": "CSO 5648 0 0 2021 0",
+                "edidHash": "ec16e0c739c9439d0f042f4ad38d2d0b",
+                "edidIdentifier": "SEK 10338 28000001 30 2015 0",
                 "edrPolicy": "always",
                 "highDynamicRange": false,
                 "iccProfilePath": "",
                 "maxBitsPerColor": 0,
                 "mode": {
-                    "height": 1600,
-                    "refreshRate": 165019,
-                    "width": 2560
+                    "height": 2160,
+                    "refreshRate": 60001,
+                    "width": 3840
                 },
                 "overscan": 0,
                 "rgbRange": "Automatic",
-                "scale": 1.25,
-                "sdrBrightness": 496,
+                "scale": 1.45,
+                "sdrBrightness": 200,
                 "sdrGamutWideness": 0,
-                "sharpness": 0,
                 "transform": "Normal",
-                "uuid": "e86b264e-10f0-4de2-afb4-16777b3873bd",
+                "uuid": "794711f6-8df0-4ba6-9c87-a96a6d16ecef",
                 "vrrPolicy": "Never",
                 "wideColorGamut": false
             },
             {
                 "allowDdcCi": true,
                 "allowSdrSoftwareBrightness": true,
-                "autoBrightnessCurve": [
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0
-                ],
                 "autoRotation": "InTabletMode",
-                "automaticBrightness": false,
                 "brightness": 1,
                 "colorPowerTradeoff": "PreferEfficiency",
                 "colorProfileSource": "sRGB",
                 "connectorName": "HDMI-A-1",
                 "detectedDdcCi": false,
-                "edidHash": "38b0684d8bbc4c7ddc2d7d36a8e2d0b4",
-                "edidIdentifier": "DEL 41510 808864332 27 2024 0",
+                "edidHash": "0253c5e494e8bbff22ba659818dfcb03",
+                "edidIdentifier": "HAT 8528 16843009 33 2020 0",
                 "edrPolicy": "always",
                 "highDynamicRange": false,
                 "iccProfilePath": "",
                 "maxBitsPerColor": 0,
                 "mode": {
-                    "height": 1440,
-                    "refreshRate": 59973,
-                    "width": 3440
+                    "height": 1080,
+                    "refreshRate": 60000,
+                    "width": 1920
                 },
                 "overscan": 0,
                 "rgbRange": "Automatic",
                 "scale": 1,
                 "sdrBrightness": 200,
                 "sdrGamutWideness": 0,
-                "sharpness": 0,
                 "transform": "Normal",
-                "uuid": "4d3676de-66ad-42cb-a168-e045bb7fea0d",
+                "uuid": "578665c2-6eef-48b0-bf39-0267cbd48ef3",
                 "vrrPolicy": "Never",
                 "wideColorGamut": false
             }
@@ -98,70 +78,15 @@
                         },
                         "priority": 0,
                         "replicationSource": ""
-                    }
-                ]
-            },
-            {
-                "lidClosed": false,
-                "outputs": [
-                    {
-                        "enabled": false,
-                        "outputIndex": 0,
-                        "position": {
-                            "x": 0,
-                            "y": 0
-                        },
-                        "priority": -1,
-                        "replicationSource": ""
                     },
                     {
                         "enabled": true,
                         "outputIndex": 1,
                         "position": {
-                            "x": 0,
-                            "y": 0
-                        },
-                        "priority": 0,
-                        "replicationSource": ""
-                    }
-                ]
-            },
-            {
-                "lidClosed": true,
-                "outputs": [
-                    {
-                        "enabled": false,
-                        "outputIndex": 0,
-                        "position": {
-                            "x": 0,
-                            "y": 0
-                        },
-                        "priority": -1,
-                        "replicationSource": ""
-                    },
-                    {
-                        "enabled": true,
-                        "outputIndex": 1,
-                        "position": {
-                            "x": 0,
-                            "y": 0
+                            "x": 391,
+                            "y": 1490
                         },
                         "priority": 1,
-                        "replicationSource": ""
-                    }
-                ]
-            },
-            {
-                "lidClosed": true,
-                "outputs": [
-                    {
-                        "enabled": true,
-                        "outputIndex": 0,
-                        "position": {
-                            "x": 0,
-                            "y": 0
-                        },
-                        "priority": 0,
                         "replicationSource": ""
                     }
                 ]

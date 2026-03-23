@@ -1,3 +1,10 @@
+[ButtonColors]
+ButtonColorsInactiveSameHoverPress=false
+ButtonIconOpacityActive=43
+ButtonIconOpacityInactive=43
+UseHoverAccentActive=true
+UseHoverAccentInactive=true
+
 [Global]
 LookAndFeelSet=org.kde.klassykitedarkbottompanel.desktop
 RefreshedConfig=6.5.3
