@@ -8,26 +8,39 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "thunderbolt" "usbhid" "usb_storage" "sd_mod" ];
+  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/mapper/luks-0a688e63-0066-480b-88b2-443ff5e9722e";
+    { device = "/dev/disk/by-uuid/ca993365-3b65-4bc0-adc4-575240670b18";
       fsType = "ext4";
     };
 
-  boot.initrd.luks.devices."luks-0a688e63-0066-480b-88b2-443ff5e9722e".device = "/dev/disk/by-uuid/0a688e63-0066-480b-88b2-443ff5e9722e";
-
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/A509-D42C";
+    { device = "/dev/disk/by-uuid/D0EE-F2AA";
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
+  fileSystems."/home/ultrafeeder4/nvme" =
+    { device = "/dev/disk/by-uuid/15e500ba-cd2f-47d5-9c9e-a3f634a6a5a5";
+      fsType = "ext4";
+    };
+
+  fileSystems."/home/ultrafeeder4/hdd1" =
+    { device = "/dev/disk/by-uuid/2d098ffb-d59c-479a-a093-dbca145e21d1";
+      fsType = "ext4";
+    };
+
+  fileSystems."/home/ultrafeeder4/hdd2" =
+    { device = "/dev/disk/by-uuid/2caca95c-d6c1-48e0-9a89-5ff2d9e2ffc4";
+      fsType = "ext4";
+    };
+
   swapDevices =
-    [ { device = "/dev/mapper/luks-05b2e514-6f37-4ee6-a219-39686938f57b"; }
+    [ { device = "/dev/disk/by-uuid/2d5c45c4-76aa-4a52-bbcc-976f49d6bd3d"; }
     ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

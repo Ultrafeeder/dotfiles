@@ -45,5 +45,6 @@
   (elpaca-use-package-mode)
   ;; Expands to: (elpaca evil (use-package evil :demand t))
   (setq elpaca-use-package-by-default t))
+(elpaca-wait)
 
 (provide 'elpaca-setup)
