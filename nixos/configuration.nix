@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{  config, lib, pkgs, pkgs-unstable, ... }:
+{  pkgs-unstable, pkgs, ... }:
 let
 	home-manager = fetchTarball "https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz";
 
