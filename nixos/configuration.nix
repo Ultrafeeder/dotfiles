@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{  pkgs, ... }:
+{  config, lib, pkgs, pkgs-unstable, ... }:
 let
 	home-manager = fetchTarball "https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz";
 
@@ -181,12 +181,15 @@ in
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
-	vim
-  wayfire
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
-  ];
+  environment.systemPackages = 
+    (with pkgs; [
+	    vim
+      wayfire
+    ])
+    ++
+    (with pkgs-unstable; [
+      klassy
+    ]);
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
