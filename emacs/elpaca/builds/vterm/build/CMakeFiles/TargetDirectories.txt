@@ -1,0 +1,4 @@
+/home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/build/CMakeFiles/vterm-module.dir
+/home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/build/CMakeFiles/run.dir
+/home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/build/CMakeFiles/edit_cache.dir
+/home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,20 @@
+ls
+cd 
+cd source/repos/NCPTS_Automation/ncpts_cc/
+ls
+dotnet run ncpts_cc.csproj 
+dotnet run ncpts_cc.csproj --framework 
+dotnet run ncpts_cc.csproj --framework windows  
+new-item test.txt
+touch test.txt
+clear
+new-item test.txt
+lunar-phases
+cd ../.ssh/
+LSCSHostPolicy.dll 
+ls 
+ssh-keygen -t ed25519
+rm config.el 
+git status
+git commit -am "got basic functionality working, breaking up into scripts"
+git push

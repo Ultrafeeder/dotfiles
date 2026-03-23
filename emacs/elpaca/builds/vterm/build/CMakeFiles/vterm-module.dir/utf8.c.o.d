@@ -1,0 +1,24 @@
+CMakeFiles/vterm-module.dir/utf8.c.o: \
+ /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/utf8.c \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/stdc-predef.h \
+ /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/utf8.h \
+ /nix/store/yps9cjmi8g58mh0f7pw902br7gxwg2dz-gcc-14.3.0/lib/gcc/x86_64-unknown-linux-gnu/14.3.0/include/stdbool.h \
+ /nix/store/yps9cjmi8g58mh0f7pw902br7gxwg2dz-gcc-14.3.0/lib/gcc/x86_64-unknown-linux-gnu/14.3.0/include/stddef.h \
+ /nix/store/yps9cjmi8g58mh0f7pw902br7gxwg2dz-gcc-14.3.0/lib/gcc/x86_64-unknown-linux-gnu/14.3.0/include/stdint.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/stdint.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/bits/libc-header-start.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/features.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/features-time64.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/bits/wordsize.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/bits/timesize.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/sys/cdefs.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/bits/long-double.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/gnu/stubs.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/gnu/stubs-64.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/bits/types.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/bits/typesizes.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/bits/time64.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/bits/wchar.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/bits/stdint-intn.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/bits/stdint-uintn.h \
+ /nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include/bits/stdint-least.h
