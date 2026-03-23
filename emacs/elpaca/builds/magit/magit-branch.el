@@ -153,11 +153,11 @@ to set `magit-branch-prefer-remote-upstream' to a non-nil value.
 However, I recommend that you use local branches as UPSTREAM."
   :package-version '(magit . "2.9.0")
   :group 'magit-commands
-  :type '(repeat (cons (string :tag "Use upstream")
-                       (choice :tag "For branches" ;???
-                               (regexp :tag "Matching")
-                               (repeat :tag "Except"
-                                       (string :tag "Branch"))))))
+  :type '(alist :key-type (string :tag "Use upstream")
+                :value-type (choice :tag "For branches" ;???
+                                    (regexp :tag "Matching")
+                                    (repeat :tag "Except"
+                                            (string :tag "Branch")))))
 
 (defcustom magit-branch-rename-push-target t
   "Whether the push-remote setup is preserved when renaming a branch.
@@ -890,7 +890,8 @@ Also rename the respective reflog file."
   (magit-run-git-with-editor "branch" "--edit-description" branch))
 
 (defclass magit--git-branch:upstream (magit--git-variable)
-  ((format :initform " %k %m %M\n   %r %R")))
+  ((format            :initform " %k %m %M\n   %r %R")
+   (accessible-format :initform "%k %m is %M and %r is %R")))
 
 (transient-define-infix magit-branch.<branch>.merge/remote ()
   :class 'magit--git-branch:upstream)
@@ -918,7 +919,7 @@ Also rename the respective reflog file."
 (cl-defmethod transient-format ((obj magit--git-branch:upstream))
   (let ((branch (transient-scope)))
     (format-spec
-     (oref obj format)
+     (transient--get-format obj)
      `((?k . ,(transient-format-key obj))
        (?r . ,(format "branch.%s.remote" branch))
        (?m . ,(format "branch.%s.merge" branch))

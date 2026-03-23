@@ -1,6 +1,6 @@
 ;;; elpaca-info.el --- Display package info  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023-2025  Nicholas Vollmer
+;; Copyright (C) 2023-2026  Nicholas Vollmer
 
 ;; Author:  Nicholas Vollmer
 ;; Keywords: convenience
@@ -85,24 +85,23 @@
          (id (intern (plist-get item-recipe :package)))
          (e (elpaca-get id))
          (order (if e (elpaca<-order e) id))
-         (declared (cdr-safe order)))
+         (declared (let ((raw (elpaca<-declaration e)))
+                     (if (keywordp (car-safe raw)) raw (cdr-safe raw)))))
     (with-temp-buffer
       (delay-mode-hooks (emacs-lisp-mode) (auto-fill-mode))
       (cl-loop
        with ordered = '( nil elpaca-recipe-functions declaration
                          elpaca-order-functions elpaca-menu-item)
-       with order-mods = (run-hook-with-args-until-success 'elpaca-order-functions order)
-       with recipe-mods =
-       (run-hook-with-args-until-success
-        'elpaca-recipe-functions (elpaca-merge-plists item-recipe order-mods declared))
-       with recipe = (elpaca-merge-plists item-recipe order-mods declared recipe-mods
-                                          `(:package ,(plist-get item-recipe :package)))
-       with lookup = `((nil ,(format "(:package %S " (plist-get recipe :package))))
-       with sources = `((elpaca-recipe-functions . ,recipe-mods) (declaration . ,declared)
+       with order-mods = (elpaca--normalize-order order)
+       with recipe = (let ((elpaca-menu-functions (lambda (&rest _) item)))
+                       (elpaca--normalize-recipe order-mods))
+       with lookup = `((nil ,(format "(:package %S :id %S" (plist-get recipe :package) id)))
+       with sources = `((declaration . ,declared)
                         (elpaca-order-functions .  ,order-mods)
-                        (elpaca-menu-item . ,item-recipe))
-       for (prop val) on recipe by #'cddr
-       unless (or (eq prop :package) (and (eq prop :source) (null val)))
+                        (elpaca-menu-item . ,item-recipe)
+                        (elpaca-recipe-functions . ,recipe))
+       for (val prop) on (reverse recipe) by #'cddr
+       unless (or (memq prop '(:package :id)) (and (eq prop :source) (null val)))
        do (push (format " %s %S" prop
                         (if (equal val elpaca-default-files-directive) '(:defaults) val))
                 (alist-get (cl-loop for source in sources thereis
@@ -113,9 +112,7 @@
        finally return
        (elpaca-info--format-recipe
         (concat (cl-loop for source in ordered for vals = (alist-get source lookup)
-                         when (and source vals
-                                   (not (and (eq source 'elpaca-menu-item)
-                                             (equal (plist-get item :source) "Init file"))))
+                         when (and source vals)
                          concat (format "\n;; Inherited from %s.\n" source)
                          when vals concat (string-join vals "\n"))
                 ")"))))))
@@ -152,13 +149,13 @@
     (with-temp-buffer
       (setf elpaca-info-alist
             `((id . ,id) (menus . ,menus) (menu .  ,menu) (item . ,item)
-              (on-disk-p ,(elpaca--on-disk-p id)) (e . , (elpaca-get id)) (indentation . "\n  ")))
+              (on-disk-p ,(elpaca--on-disk-p id)) (e . ,(elpaca-get id)) (indentation . "\n  ")))
       (run-hooks 'elpaca-info-sections-hook)
       (buffer-string))))
 
 (defmacro elpaca-info-defsection (name &rest body)
   "Define section function with NAME which evals BODY to return section string."
-  (declare (indent 1))
+  (declare (indent 1) (debug (symbolp body)))
   `(defun ,(intern (format "elpaca-info-section--%s" name)) ()
      ,(format "Insert package's %s." name)
      (let-alist elpaca-info-alist
@@ -211,17 +208,21 @@
             (if .on-disk-p "nil" "?"))))
 (elpaca-info-defsection version
   (when-let* ((version (if-let* ((.e)
-                                 (default-directory (elpaca<-repo-dir .e))
-                                 (v (ignore-errors (or (elpaca--declared-version .e) (elpaca-latest-tag .e)))))
-                           (concat (string-trim v) " "
-                                   (ignore-errors
-                                     (string-trim (elpaca-process-output "git" "rev-parse" "--short" "HEAD"))))
+                                 (default-directory (elpaca<-source-dir .e))
+                                 (v (ignore-errors (or (elpaca--version .e) (elpaca--version .e :alternative)))))
+                           (concat (string-trim v) " " (ignore-errors (elpaca-ref .e)))
                          (when-let* ((builtin (alist-get .id package--builtin-versions)))
                            (concat (mapconcat #'number-to-string builtin ".") " (builtin)")))))
     (format "\n%s %s" (elpaca-info--header "installed version") version)))
 (elpaca-info-defsection statuses
   (when-let* ((.e) (statuses (elpaca<-statuses .e)))
     (format "\n%s\n  %S" (elpaca-info--header "statuses") statuses)))
+(elpaca-info-defsection blockers
+  (when-let* ((.e) (blockers (elpaca<-blockers .e)))
+    (format "\n%s\n  %S" (elpaca-info--header "blockers") blockers)))
+(elpaca-info-defsection blocking
+  (when-let* ((.e) (blocking (elpaca<-blocking .e)))
+    (format "\n%s\n  %S" (elpaca-info--header "blocking") blocking)))
 (elpaca-info-defsection files
   (when-let* ((.e) (files (ignore-errors (elpaca--files .e))))
     (format "\n%s\n  %s" (elpaca-info--header "files") (string-join (elpaca-info--files files) .indentation))))
@@ -237,6 +238,7 @@
      elpaca-info-section--source elpaca-info-section--url elpaca-info-section--menu-item
      elpaca-info-section--recipe elpaca-info-section--pin-status elpaca-info-section--dependencies
      elpaca-info-section--dependents elpaca-info-section--version elpaca-info-section--statuses
+     elpaca-info-section--blockers elpaca-info-section--blocking
      elpaca-info-section--files elpaca-info-section--log)
   "Hook run to layout info buffer." :type 'hook :group 'elpaca)
 
@@ -260,7 +262,7 @@ If INTERACTIVE is non-nil, display info in a dedicated buffer."
           (unless (derived-mode-p 'elpaca-info-mode) (elpaca-info-mode))
           (with-silent-modifications
             (erase-buffer)
-            (when e (setq default-directory (elpaca<-repo-dir e)))
+            (when e (setq default-directory (elpaca<-source-dir e)))
             (insert info)
             (goto-char (point-min))
             (pop-to-buffer (current-buffer))))))))

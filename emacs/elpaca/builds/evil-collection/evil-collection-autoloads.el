@@ -939,6 +939,13 @@ Set up `evil' bindings for `markdown-mode'.")
 (register-definition-prefixes "modes/markdown-mode/evil-collection-markdown-mode" '("evil-collection-markdown-mode-maps"))
 
 
+;;; Generated autoloads from modes/message/evil-collection-message.el
+
+(autoload 'evil-collection-message-setup "modes/message/evil-collection-message" "\
+Set up `evil' bindings for `message-mode'.")
+(register-definition-prefixes "modes/message/evil-collection-message" '("evil-collection-message-maps"))
+
+
 ;;; Generated autoloads from modes/minesweeper/evil-collection-minesweeper.el
 
 (autoload 'evil-collection-minesweeper-setup "modes/minesweeper/evil-collection-minesweeper" "\

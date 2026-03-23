@@ -1,4 +1,4 @@
-set(CMAKE_C_COMPILER "/nix/store/x45d95acx6rybkb5cidrxxffval9k2pg-gcc-wrapper-14.3.0/bin/gcc")
+set(CMAKE_C_COMPILER "/nix/store/0j1ajvl2qwwb9n5a91hzd0j98fk9fa3k-gcc-wrapper-14.3.0/bin/gcc")
 set(CMAKE_C_COMPILER_ARG1 "")
 set(CMAKE_C_COMPILER_ID "GNU")
 set(CMAKE_C_COMPILER_VERSION "14.3.0")
@@ -23,14 +23,14 @@ set(CMAKE_C_COMPILER_ARCHITECTURE_ID "x86_64")
 
 
 
-set(CMAKE_AR "/nix/store/x45d95acx6rybkb5cidrxxffval9k2pg-gcc-wrapper-14.3.0/bin/ar")
-set(CMAKE_C_COMPILER_AR "/nix/store/yps9cjmi8g58mh0f7pw902br7gxwg2dz-gcc-14.3.0/bin/gcc-ar")
-set(CMAKE_RANLIB "/nix/store/x45d95acx6rybkb5cidrxxffval9k2pg-gcc-wrapper-14.3.0/bin/ranlib")
-set(CMAKE_C_COMPILER_RANLIB "/nix/store/yps9cjmi8g58mh0f7pw902br7gxwg2dz-gcc-14.3.0/bin/gcc-ranlib")
-set(CMAKE_LINKER "/nix/store/x45d95acx6rybkb5cidrxxffval9k2pg-gcc-wrapper-14.3.0/bin/ld")
+set(CMAKE_AR "/nix/store/0j1ajvl2qwwb9n5a91hzd0j98fk9fa3k-gcc-wrapper-14.3.0/bin/ar")
+set(CMAKE_C_COMPILER_AR "/nix/store/k3qc3y1f6i8g2dgz5z0cf00dj4xc5rrv-gcc-14.3.0/bin/gcc-ar")
+set(CMAKE_RANLIB "/nix/store/0j1ajvl2qwwb9n5a91hzd0j98fk9fa3k-gcc-wrapper-14.3.0/bin/ranlib")
+set(CMAKE_C_COMPILER_RANLIB "/nix/store/k3qc3y1f6i8g2dgz5z0cf00dj4xc5rrv-gcc-14.3.0/bin/gcc-ranlib")
+set(CMAKE_LINKER "/nix/store/0j1ajvl2qwwb9n5a91hzd0j98fk9fa3k-gcc-wrapper-14.3.0/bin/ld")
 set(CMAKE_LINKER_LINK "")
 set(CMAKE_LINKER_LLD "")
-set(CMAKE_C_COMPILER_LINKER "/nix/store/q464imnlzzwwrnv98iclp9f7zfi4a1z2-binutils-wrapper-2.44/bin/ld")
+set(CMAKE_C_COMPILER_LINKER "/nix/store/rinxh4y0akcin90l05j0zr1r3wahl34d-binutils-wrapper-2.44/bin/ld")
 set(CMAKE_C_COMPILER_LINKER_ID "GNU")
 set(CMAKE_C_COMPILER_LINKER_VERSION 2.44)
 set(CMAKE_C_COMPILER_LINKER_FRONTEND_VARIANT GNU)
@@ -78,7 +78,7 @@ endif()
 
 
 
-set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "/nix/store/26418glgc0mhiwjj50qv17f28lrad2nh-libvterm-neovim-0.3.3/include;/nix/store/yps9cjmi8g58mh0f7pw902br7gxwg2dz-gcc-14.3.0/lib/gcc/x86_64-unknown-linux-gnu/14.3.0/include;/nix/store/yps9cjmi8g58mh0f7pw902br7gxwg2dz-gcc-14.3.0/include;/nix/store/yps9cjmi8g58mh0f7pw902br7gxwg2dz-gcc-14.3.0/lib/gcc/x86_64-unknown-linux-gnu/14.3.0/include-fixed;/nix/store/1k8f0lkj10gsbb1fh0idr1423l37yj69-glibc-2.40-218-dev/include")
+set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "/nix/store/xhm12js5zzn8fcdlfyq1ag51ngn4r7vx-libvterm-neovim-0.3.3/include;/nix/store/k3qc3y1f6i8g2dgz5z0cf00dj4xc5rrv-gcc-14.3.0/lib/gcc/x86_64-unknown-linux-gnu/14.3.0/include;/nix/store/k3qc3y1f6i8g2dgz5z0cf00dj4xc5rrv-gcc-14.3.0/include;/nix/store/k3qc3y1f6i8g2dgz5z0cf00dj4xc5rrv-gcc-14.3.0/lib/gcc/x86_64-unknown-linux-gnu/14.3.0/include-fixed;/nix/store/radp574lyk1l05lccg0i4hj4z1p3ig0m-glibc-2.40-218-dev/include")
 set(CMAKE_C_IMPLICIT_LINK_LIBRARIES "gcc;gcc_s;c;gcc;gcc_s")
-set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/nix/store/26418glgc0mhiwjj50qv17f28lrad2nh-libvterm-neovim-0.3.3/lib;/nix/store/vr7ds8vwbl2fz7pr221d5y0f8n9a5wda-glibc-2.40-218/lib;/nix/store/yps9cjmi8g58mh0f7pw902br7gxwg2dz-gcc-14.3.0/lib/gcc/x86_64-unknown-linux-gnu/14.3.0;/nix/store/0p8b2lqk47fvxm9hc6c8mnln5l8x51q1-gcc-14.3.0-lib/lib;/nix/store/yps9cjmi8g58mh0f7pw902br7gxwg2dz-gcc-14.3.0/lib")
+set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/nix/store/xhm12js5zzn8fcdlfyq1ag51ngn4r7vx-libvterm-neovim-0.3.3/lib;/nix/store/km4g87jxsqxvcq344ncyb8h1i6f3cqxh-glibc-2.40-218/lib;/nix/store/k3qc3y1f6i8g2dgz5z0cf00dj4xc5rrv-gcc-14.3.0/lib/gcc/x86_64-unknown-linux-gnu/14.3.0;/nix/store/alrbhz7im0w0jdwcfdgcfk7pxhkl1fzj-gcc-14.3.0-lib/lib;/nix/store/k3qc3y1f6i8g2dgz5z0cf00dj4xc5rrv-gcc-14.3.0/lib")
 set(CMAKE_C_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "")

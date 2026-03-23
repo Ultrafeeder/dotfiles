@@ -3797,7 +3797,40 @@ affected because their local values have already been initialized.
 @item @kbd{D t} (@code{magit-diff-toggle-refine-hunk})
 @kindex D t
 @findex magit-diff-toggle-refine-hunk
-This command toggles hunk refinement on or off.
+This command toggles hunk refinement on or off, or switches the
+refinement method.
+
+If hunk refinement is currently on, then turn off hunk refinement.
+If hunk refinement is off, then turn on immediate hunk refinement.
+
+With a prefix argument, an alternative refinement method comes into
+play.  When using that method, mode hunks are not refined immediately,
+instead each hunk is refined once it is selected, and then stays refined
+until the next refresh of the buffer.  If hunk refinement is currently
+on, then toggle between refining all hunks up front or only once they
+are selected.  If hunk refinement is off, then turn on hunk refinement,
+using the eventual refinement method.
+
+Customize option @code{magit-diff-refine-hunk} to change the default method.
+
+@item @kbd{D T} (@code{magit-diff-toggle-fontify-hunk})
+@kindex D T
+@findex magit-diff-toggle-fontify-hunk
+This command toggles hunk fontification on or off, or switches the
+fontification method.
+
+If hunk fontification is currently on, then turn off hunk fontification.
+If hunk fontification is off, then turn on immediate hunk fontification.
+
+With a prefix argument, an alternative fontification method comes into
+play.  When using that method, mode hunks are not refined immediately,
+instead each hunk is refined once it is selected, and then stays refined
+until the next refresh of the buffer.  If hunk fontification is currently
+on, then toggle between refining all hunks up front or only once they
+are selected.  If hunk fontification is off, then turn on fontification,
+using the eventual fontification method.
+
+Customize option @code{magit-diff-fontify-hunk} to change the default method.
 
 @item @kbd{D r} (@code{magit-diff-switch-range-type})
 @kindex D r
@@ -3963,6 +3996,45 @@ variant is only provided for performance reasons.
 @defopt magit-diff-refine-ignore-whitespace
 Whether to ignore whitespace changes in word-granularity
 differences.
+@end defopt
+
+@defopt magit-diff-fontify-hunk
+Whether to apply syntax highlighting to diff hunks.
+
+@itemize
+@item
+@code{nil} Never fontify diff hunks.
+@item
+@code{all} Fontify all diff hunks.
+@item
+@code{t} Fontify each hunk once it becomes the current section.
+Keep the fontification when another section is selected.
+Refreshing the buffer removes all fontification.  This
+variant is only provided for performance reasons.
+@end itemize
+
+If this is enabled, then @code{magit-diff-specify-hunk-foreground} should
+be disabled.  Also consider enabling @code{magit-diff-use-indicator-faces}.
+Emacs has to be restarted, after changing the value of the former.
+
+This is considered experimental and is disabled by default, because the
+fontification is done synchronously, and that can lead to a noticable
+delay.  The plan is to make it asynchronous, probably with the help of
+the new @code{futur} package, which itself still under heavy development.
+@end defopt
+
+@defopt magit-diff-specify-hunk-foreground
+Whether to specify foreground colors for hunk faces.
+
+Setting this only has an effect if done before Magit is loaded.
+@end defopt
+
+@defopt magit-diff-use-indicator-faces
+Whether to use separate faces for diff side indicators.
+
+If non-@code{nil}, use, for example, @code{magit-diff-removed-indicator} for the
+plus sign at the beginning of a removed line.  If @code{nil}, use the same
+face as for the rest of the line.
 @end defopt
 
 @defopt magit-diff-adjust-tab-width
@@ -5463,16 +5535,16 @@ buffer, but it's also possible to un-/stage all changes made to the
 file visited in the current buffer right from inside that buffer.
 
 @table @asis
-@item @kbd{M-x magit-stage-file}
-@findex magit-stage-file
+@item @kbd{M-x magit-stage-files}
+@findex magit-stage-files
 When invoked inside a file-visiting buffer, then stage all changes
 to that file.  In a Magit buffer, stage the file at point if any.
 Otherwise prompt for a file to be staged.  With a prefix argument
 always prompt the user for a file, even in a file-visiting buffer or
 when there is a file section at point.
 
-@item @kbd{M-x magit-unstage-file}
-@findex magit-unstage-file
+@item @kbd{M-x magit-unstage-files}
+@findex magit-unstage-files
 When invoked inside a file-visiting buffer, then unstage all changes
 to that file.  In a Magit buffer, unstage the file at point if any.
 Otherwise prompt for a file to be unstaged.  With a prefix argument
@@ -6825,6 +6897,8 @@ created.  With a prefix argument this does not actually create the
 merge commit, which makes it possible to inspect how conflicts were
 resolved and to adjust the commit message.
 
+To create an octopus-merge, separate branches with commas.
+
 @item @kbd{m e} (@code{magit-merge-editmsg})
 @kindex m e
 @findex magit-merge-editmsg
@@ -6832,6 +6906,8 @@ This command merges another branch or an arbitrary revision into the
 current branch and opens a commit message buffer, so that the user
 can make adjustments.  The commit is not actually created until the
 user finishes with @code{C-c C-c}.
+
+To create an octopus-merge, separate branches with commas.
 
 @item @kbd{m n} (@code{magit-merge-nocommit})
 @kindex m n
@@ -6853,6 +6929,8 @@ This ensures that the respective pull-request (if any) won't get
 stuck on some obsolete version of the commits that are being merged.
 Finally, if @code{magit-branch-pull-request} was used to create the merged
 branch, then the respective remote branch is also removed.
+
+To create an octopus-merge, separate branches with commas.
 
 @item @kbd{m d} (@code{magit-merge-dissolve})
 @kindex m d
@@ -7095,6 +7173,10 @@ the selected branch TARGET are being rebased.
 This command starts a non-interactive rebase sequence to transfer
 commits from START to @code{HEAD} onto NEWBASE@.  START has to be selected
 from a list of recent commits.
+
+This command calls @code{git rebase --onto NEWBASE START HEAD}.  Because
+the range always ends at @code{HEAD}, you must first check out the branch
+or commit you want as the upper bound (a detached @code{HEAD} works too).
 @end table
 
 By default Magit uses the @code{--autostash} argument, which causes
@@ -9422,10 +9504,10 @@ all, add this to your init file and restart Emacs.
 
 @table @asis
 @item @kbd{C-c f} (@code{magit-file-dispatch})
-@itemx @kbd{C-c f s} (@code{magit-stage-file})
-@itemx @kbd{C-c f s} (@code{magit-stage-buffer-file})
-@itemx @kbd{C-c f u} (@code{magit-unstage-file})
-@itemx @kbd{C-c f u} (@code{magit-unstage-buffer-file})
+@itemx @kbd{C-c f s} (@code{magit-stage-files})
+@itemx @kbd{C-c f s} (@code{magit-file-stage})
+@itemx @kbd{C-c f u} (@code{magit-unstage-files})
+@itemx @kbd{C-c f u} (@code{magit-file-unstage})
 @itemx @kbd{C-c f , x} (@code{magit-file-untrack})
 @itemx @kbd{C-c f , r} (@code{magit-file-rename})
 @itemx @kbd{C-c f , k} (@code{magit-file-delete})
@@ -9480,10 +9562,10 @@ all, add this to your init file and restart Emacs.
 @kindex C-c f c
 @kindex C-c f e
 @findex magit-file-dispatch
-@findex magit-stage-file
-@findex magit-stage-buffer-file
-@findex magit-unstage-file
-@findex magit-unstage-buffer-file
+@findex magit-stage-files
+@findex magit-file-stage
+@findex magit-unstage-files
+@findex magit-file-unstage
 @findex magit-file-untrack
 @findex magit-file-rename
 @findex magit-file-delete
@@ -9519,22 +9601,22 @@ the instructions further up.
 This transient prefix command binds the following suffix commands
 and displays them in a temporary buffer until a suffix is invoked.
 
-@item @kbd{C-c M-g s} (@code{magit-stage-file})
-@itemx @kbd{C-c M-g s} (@code{magit-stage-buffer-file})
+@item @kbd{C-c M-g s} (@code{magit-stage-files})
+@itemx @kbd{C-c M-g s} (@code{magit-file-stage})
 @kindex C-c M-g s
 @kindex C-c M-g s
-@findex magit-stage-file
-@findex magit-stage-buffer-file
+@findex magit-stage-files
+@findex magit-file-stage
 Stage all changes to the file being visited in the current buffer.
 When not visiting a file, then the first command is used, which
 prompts for a file.
 
-@item @kbd{C-c M-g u} (@code{magit-unstage-file})
-@itemx @kbd{C-c M-g u} (@code{magit-unstage-buffer-file})
+@item @kbd{C-c M-g u} (@code{magit-unstage-files})
+@itemx @kbd{C-c M-g u} (@code{magit-file-unstage})
 @kindex C-c M-g u
 @kindex C-c M-g u
-@findex magit-unstage-file
-@findex magit-unstage-buffer-file
+@findex magit-unstage-files
+@findex magit-file-unstage
 Unstage all changes to the file being visited in the current buffer.
 When not visiting a file, then the first command is used, which
 prompts for a file.

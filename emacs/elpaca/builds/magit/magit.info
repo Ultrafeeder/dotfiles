@@ -21,7 +21,7 @@ END-INFO-DIR-ENTRY
 
 Indirect:
 magit.info-1: 774
-magit.info-2: 301966
+magit.info-2: 303113
 
 Tag Table:
 (Indirect)
@@ -81,127 +81,127 @@ Ref: Reflog134993
 Ref: Cherries136546
 Node: Diffing138322
 Ref: Refreshing Diffs142267
-Ref: Commands Available in Diffs145855
-Ref: Diff Options148250
-Ref: Revision Buffer154246
-Node: Ediffing157500
-Node: References Buffer163544
-Ref: References Sections174107
-Node: Bisecting174892
-Node: Visiting Files and Blobs177199
-Ref: General-Purpose Visit Commands177641
-Ref: Visiting Files and Blobs from a Diff178459
-Node: Blaming183707
-Node: Manipulating190685
-Node: Creating Repository191027
-Node: Cloning Repository191564
-Node: Staging and Unstaging198003
-Ref: Staging from File-Visiting Buffers201931
-Node: Applying202944
-Node: Committing205017
-Ref: Initiating a Commit205642
-Ref: Creating a new commit205954
-Ref: Editing the last commit206064
-Ref: Editing any reachable commit208043
-Ref: Editing any reachable commit and rebasing immediately212456
-Ref: Options used by commit commands214104
-Ref: Used by all or most commit commands214176
-Ref: Used by all squash and fixup commands216405
-Ref: Used by specific commit commands216959
-Ref: Editing Commit Messages217283
-Ref: Using the Revision Stack219837
-Ref: Commit Pseudo Headers222797
-Ref: Commit Mode and Hooks223949
-Ref: Commit Message Conventions226658
-Node: Branching228546
-Ref: The Two Remotes228667
-Ref: Branch Commands231232
-Ref: Branch Git Variables243970
-Ref: Auxiliary Branch Commands249215
-Node: Merging250232
-Node: Resolving Conflicts254386
-Node: Rebasing259756
-Ref: Editing Rebase Sequences264714
-Ref: Information About In-Progress Rebase269943
-Ref: Rebasing-Footnote-1278935
-Node: Cherry Picking279531
-Ref: Reverting283839
-Node: Resetting285199
-Node: Stashing287023
-Node: Transferring293262
-Node: Remotes293484
-Ref: Remote Commands293581
-Ref: Remote Git Variables297525
-Node: Fetching298709
-Node: Pulling301966
-Node: Pushing302992
-Node: Plain Patches307279
-Node: Maildir Patches308750
-Node: Miscellaneous310229
-Node: Tagging310575
-Node: Notes312468
-Node: Submodules314803
-Ref: Listing Submodules314964
-Ref: Submodule Transient317025
-Node: Subtree319378
-Node: Worktree321309
-Node: Sparse checkouts322624
-Node: Bundle325396
-Node: Common Commands325771
-Node: Wip Modes328397
-Ref: Wip Graph332971
-Node: Commands for Buffers Visiting Files335410
-Node: Minor Mode for Buffers Visiting Blobs343749
-Node: Customizing344912
-Node: Per-Repository Configuration346504
-Node: Essential Settings348758
-Ref: Safety349047
-Ref: Performance350722
-Ref: Log Performance353513
-Ref: Diff Performance354812
-Ref: Refs Buffer Performance356153
-Ref: Committing Performance356726
-Ref: Microsoft Windows Performance357706
-Ref: MacOS Performance358793
-Ref: Global Bindings359676
-Ref: Essential Settings-Footnote-1361849
-Node: Plumbing361931
-Node: Calling Git362756
-Ref: Getting a Value from Git364215
-Ref: Calling Git for Effect367833
-Node: Section Plumbing373772
-Ref: Creating Sections373924
-Ref: Section Selection377734
-Ref: Matching Sections379431
-Node: Refreshing Buffers385333
-Node: Conventions388473
-Ref: Theming Faces388637
-Node: FAQ396670
-Node: FAQ - How to ...?397106
-Ref: How to pronounce Magit?397239
-Ref: How to show git's output?397931
-Ref: How to install the gitman info manual?398548
-Ref: How to show diffs for gpg-encrypted files?399353
-Ref: How does branching and pushing work?399762
-Ref: Should I disable VC?399926
-Node: FAQ - Issues and Errors400409
-Ref: Magit is slow400554
-Ref: I changed several thousand files at once and now Magit is unusable400700
-Ref: I am having problems committing401239
-Ref: I am using MS Windows and cannot push with Magit401504
-Ref: I am using macOS and SOMETHING works in shell but not in Magit401902
-Ref: Expanding a file to show the diff causes it to disappear402489
-Ref: Point is wrong in the COMMIT_EDITMSG buffer402839
-Ref: The mode-line information isn't always up-to-date403663
-Ref: A branch and tag sharing the same name breaks SOMETHING404494
-Ref: My Git hooks work on the command-line but not inside Magit405142
-Ref: git-commit-mode isn't used when committing from the command-line405734
-Ref: Point ends up inside invisible text when jumping to a file-visiting buffer407722
-Ref: I am no longer able to save popup defaults408314
-Node: Debugging Tools409107
-Node: Keystroke Index413042
-Node: Function and Command Index451138
-Node: Variable Index502710
+Ref: Commands Available in Diffs147545
+Ref: Diff Options149940
+Ref: Revision Buffer157440
+Node: Ediffing160694
+Node: References Buffer166738
+Ref: References Sections177301
+Node: Bisecting178086
+Node: Visiting Files and Blobs180393
+Ref: General-Purpose Visit Commands180835
+Ref: Visiting Files and Blobs from a Diff181653
+Node: Blaming186901
+Node: Manipulating193879
+Node: Creating Repository194221
+Node: Cloning Repository194758
+Node: Staging and Unstaging201197
+Ref: Staging from File-Visiting Buffers205125
+Node: Applying206140
+Node: Committing208213
+Ref: Initiating a Commit208838
+Ref: Creating a new commit209150
+Ref: Editing the last commit209260
+Ref: Editing any reachable commit211239
+Ref: Editing any reachable commit and rebasing immediately215652
+Ref: Options used by commit commands217300
+Ref: Used by all or most commit commands217372
+Ref: Used by all squash and fixup commands219601
+Ref: Used by specific commit commands220155
+Ref: Editing Commit Messages220479
+Ref: Using the Revision Stack223033
+Ref: Commit Pseudo Headers225993
+Ref: Commit Mode and Hooks227145
+Ref: Commit Message Conventions229854
+Node: Branching231742
+Ref: The Two Remotes231863
+Ref: Branch Commands234428
+Ref: Branch Git Variables247166
+Ref: Auxiliary Branch Commands252411
+Node: Merging253428
+Node: Resolving Conflicts257777
+Node: Rebasing263147
+Ref: Editing Rebase Sequences268344
+Ref: Information About In-Progress Rebase273573
+Ref: Rebasing-Footnote-1282565
+Node: Cherry Picking283161
+Ref: Reverting287469
+Node: Resetting288829
+Node: Stashing290653
+Node: Transferring296892
+Node: Remotes297114
+Ref: Remote Commands297211
+Ref: Remote Git Variables301155
+Node: Fetching303113
+Node: Pulling305596
+Node: Pushing306622
+Node: Plain Patches310909
+Node: Maildir Patches312380
+Node: Miscellaneous313859
+Node: Tagging314205
+Node: Notes316098
+Node: Submodules318433
+Ref: Listing Submodules318594
+Ref: Submodule Transient320655
+Node: Subtree323008
+Node: Worktree324939
+Node: Sparse checkouts326254
+Node: Bundle329026
+Node: Common Commands329401
+Node: Wip Modes332027
+Ref: Wip Graph336601
+Node: Commands for Buffers Visiting Files339040
+Node: Minor Mode for Buffers Visiting Blobs347355
+Node: Customizing348518
+Node: Per-Repository Configuration350110
+Node: Essential Settings352364
+Ref: Safety352653
+Ref: Performance354328
+Ref: Log Performance357119
+Ref: Diff Performance358418
+Ref: Refs Buffer Performance359759
+Ref: Committing Performance360332
+Ref: Microsoft Windows Performance361312
+Ref: MacOS Performance362399
+Ref: Global Bindings363282
+Ref: Essential Settings-Footnote-1365455
+Node: Plumbing365537
+Node: Calling Git366362
+Ref: Getting a Value from Git367821
+Ref: Calling Git for Effect371439
+Node: Section Plumbing377378
+Ref: Creating Sections377530
+Ref: Section Selection381340
+Ref: Matching Sections383037
+Node: Refreshing Buffers388939
+Node: Conventions392079
+Ref: Theming Faces392243
+Node: FAQ400276
+Node: FAQ - How to ...?400712
+Ref: How to pronounce Magit?400845
+Ref: How to show git's output?401537
+Ref: How to install the gitman info manual?402154
+Ref: How to show diffs for gpg-encrypted files?402959
+Ref: How does branching and pushing work?403368
+Ref: Should I disable VC?403532
+Node: FAQ - Issues and Errors404015
+Ref: Magit is slow404160
+Ref: I changed several thousand files at once and now Magit is unusable404306
+Ref: I am having problems committing404845
+Ref: I am using MS Windows and cannot push with Magit405110
+Ref: I am using macOS and SOMETHING works in shell but not in Magit405508
+Ref: Expanding a file to show the diff causes it to disappear406095
+Ref: Point is wrong in the COMMIT_EDITMSG buffer406445
+Ref: The mode-line information isn't always up-to-date407269
+Ref: A branch and tag sharing the same name breaks SOMETHING408100
+Ref: My Git hooks work on the command-line but not inside Magit408748
+Ref: git-commit-mode isn't used when committing from the command-line409340
+Ref: Point ends up inside invisible text when jumping to a file-visiting buffer411328
+Ref: I am no longer able to save popup defaults411920
+Node: Debugging Tools412713
+Node: Keystroke Index416648
+Node: Function and Command Index454817
+Node: Variable Index506462
 
 End Tag Table
 

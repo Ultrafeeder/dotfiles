@@ -1,0 +1,10 @@
+[LegacySession: saved at previous logout]
+count=0
+
+[Session: saved at previous logout]
+clientId1=10132152d0da000177427222800000027550006
+count=1
+program1=emacs
+restartCommand1=/nix/store/x9jcbzzhfmqv6ydhxi1yg24fr44n98s8-emacs-30.2/bin/emacs,--smid=10132152d0da000177427222800000027550006,--no-splash,--chdir=/home/ultrafeeder4
+restartStyleHint1=0
+userId1=ultrafeeder4

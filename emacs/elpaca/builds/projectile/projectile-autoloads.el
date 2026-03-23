@@ -195,6 +195,11 @@ Jump to a project's file using completion and show it in another frame.
 With a prefix arg INVALIDATE-CACHE invalidates the cache first.
 
 (fn &optional INVALIDATE-CACHE)" t)
+(autoload 'projectile-find-file-all "projectile" "\
+Jump to any file in the project, ignoring VCS and projectile ignore rules.
+This lists all files under the project root using a generic file listing
+command (fd or find), bypassing `.gitignore', `.projectile', and other
+ignore mechanisms." t)
 (autoload 'projectile-toggle-project-read-only "projectile" "\
 Toggle project read only." t)
 (autoload 'projectile-add-dir-local-variable "projectile" "\
@@ -408,11 +413,20 @@ The buffers are killed according to the value of
 (autoload 'projectile-save-project-buffers "projectile" "\
 Save all project buffers." t)
 (autoload 'projectile-dired "projectile" "\
-Open `dired' at the root of the project." t)
+Open `dired' at the root of the project.
+With a prefix argument ARG, prompt for a known project to open in dired.
+
+(fn &optional ARG)" t)
 (autoload 'projectile-dired-other-window "projectile" "\
-Open `dired'  at the root of the project in another window." t)
+Open `dired' at the root of the project in another window.
+With a prefix argument ARG, prompt for a known project to open in dired.
+
+(fn &optional ARG)" t)
 (autoload 'projectile-dired-other-frame "projectile" "\
-Open `dired' at the root of the project in another frame." t)
+Open `dired' at the root of the project in another frame.
+With a prefix argument ARG, prompt for a known project to open in dired.
+
+(fn &optional ARG)" t)
 (autoload 'projectile-vc "projectile" "\
 Open `vc-dir' at the root of the project.
 

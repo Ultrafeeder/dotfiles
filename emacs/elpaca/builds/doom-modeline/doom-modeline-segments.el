@@ -76,6 +76,7 @@
 (defvar evil-visual-end)
 (defvar evil-visual-selection)
 (defvar flycheck-current-errors)
+(defvar flycheck-last-status-change)
 (defvar flycheck-mode-menu-map)
 (defvar flymake--state)
 (defvar flymake-menu)
@@ -687,6 +688,7 @@ Uses `nerd-icons-octicon' to fetch the icon."
 (defun doom-modeline--in-git-worktree-p ()
   "Return non-nil if the current buffer's file is in a git worktree."
   (when-let* ((git-dir (and buffer-file-name
+                            (not (file-remote-p buffer-file-name)) ; avoid tramp hangs
                             (locate-dominating-file buffer-file-name ".git"))))
     ;; In a worktree, .git is a file (not a directory)
     (file-regular-p (expand-file-name ".git" git-dir))))
@@ -823,6 +825,11 @@ level."
   "Update flycheck via STATUS."
   (setq doom-modeline--flycheck
         (when (bound-and-true-p flycheck-mode)
+          ;; Ensure status is valid
+          ;; `window-state-change-functions' will pass window or frame
+          (unless (and status (symbolp status))
+            (setq status flycheck-last-status-change))
+
           (let-alist (doom-modeline--flycheck-count-errors)
             (let* ((vsep (doom-modeline-vspc))
                    (seg (cond
@@ -830,23 +837,29 @@ level."
                               (and doom-modeline--limited-width-p (eq doom-modeline-check 'auto)))
                           (let ((count (+ .error .warning .info)))
                             (pcase status
-                              ('finished (if (> count 0)
-                                             (let ((face (if (> .error 0) 'doom-modeline-urgent 'doom-modeline-warning)))
-                                               (concat
-                                                (doom-modeline-check-icon "nf-md-alert_circle_outline" "⚠" "!" face)
-                                                vsep
-                                                (doom-modeline-check-text (number-to-string count) face)))
-                                           (doom-modeline-check-icon "nf-md-check_circle_outline" "✔" "*" 'doom-modeline-info)))
-                              ('running (concat
-                                         (doom-modeline-check-icon "nf-md-timer_sand" "⏳" "*" 'doom-modeline-debug)
-                                         (when (> count 0)
-                                           (concat
-                                            vsep
-                                            (doom-modeline-check-text (number-to-string count) 'doom-modeline-debug)))))
-                              ('no-checker (doom-modeline-check-icon "nf-md-alert_box_outline" "⚠" "-" 'doom-modeline-debug))
-                              ('errored (doom-modeline-check-icon "nf-md-alert_box_outline" "⚠" "!" 'doom-modeline-urgent))
-                              ('interrupted (doom-modeline-check-icon "nf-md-pause_circle_outline" "⦷" "." 'doom-modeline-debug))
-                              ('suspicious (doom-modeline-check-icon "nf-md-file_question_outline" "❓" "?" 'doom-modeline-debug))
+                              ('finished
+                               (if (> count 0)
+                                   (let ((face (if (> .error 0) 'doom-modeline-urgent 'doom-modeline-warning)))
+                                     (concat
+                                      (doom-modeline-check-icon "nf-md-alert_circle_outline" "⚠" "!" face)
+                                      vsep
+                                      (doom-modeline-check-text (number-to-string count) face)))
+                                 (doom-modeline-check-icon "nf-md-check_circle_outline" "✔" "*" 'doom-modeline-info)))
+                              ('running
+                               (concat
+                                (doom-modeline-check-icon "nf-md-timer_sand" "⏳" "*" 'doom-modeline-debug)
+                                (when (> count 0)
+                                  (concat
+                                   vsep
+                                   (doom-modeline-check-text (number-to-string count) 'doom-modeline-debug)))))
+                              ('no-checker
+                               (doom-modeline-check-icon "nf-md-alert_box_outline" "⚠" "-" 'doom-modeline-debug))
+                              ('errored
+                               (doom-modeline-check-icon "nf-md-alert_box_outline" "⚠" "!" 'doom-modeline-urgent))
+                              ('interrupted
+                               (doom-modeline-check-icon "nf-md-pause_circle_outline" "⦷" "." 'doom-modeline-debug))
+                              ('suspicious
+                               (doom-modeline-check-icon "nf-md-file_question_outline" "❓" "?" 'doom-modeline-debug))
                               (_ ""))))
                          ((or (eq doom-modeline-check 'full)
                               (and (not doom-modeline--limited-width-p) (eq doom-modeline-check 'auto)))
@@ -883,7 +896,6 @@ level."
                                            (describe-function 'flycheck-mode)))
                                        map)))))))
 (add-hook 'flycheck-status-changed-functions #'doom-modeline-update-flycheck)
-(add-hook 'flycheck-mode-hook #'doom-modeline-update-flycheck)
 (add-hook 'window-state-change-functions #'doom-modeline-update-flycheck)
 
 (doom-modeline-add-variable-watcher
@@ -968,23 +980,27 @@ level."
                                 (and doom-modeline--limited-width-p (eq doom-modeline-check 'auto)))
                             (let ((count (+ .error .warning .note)))
                               (cond
-                               (some-waiting (concat
-                                              (doom-modeline-check-icon "nf-md-timer_sand" "⏳" "*" 'doom-modeline-debug)
-                                              (when (> count 0)
-                                                (concat
-                                                 vsep
-                                                 (doom-modeline-check-text (number-to-string count) 'doom-modeline-debug)))))
-                               ((null known) (doom-modeline-check-icon "nf-md-alert_box_outline" "⚠" "!" 'doom-modeline-urgent))
-                               (all-disabled (doom-modeline-check-icon "nf-md-alert_box_outline" "⚠" "!" 'doom-modeline-warning))
-                               (t (if (> count 0)
-                                      (let ((face (cond ((> .error 0) 'doom-modeline-urgent)
-                                                        ((> .warning 0) 'doom-modeline-warning)
-                                                        (t 'doom-modeline-info))))
-                                        (concat
-                                         (doom-modeline-check-icon "nf-md-alert_circle_outline" "⚠" "!" face)
-                                         vsep
-                                         (doom-modeline-check-text (number-to-string count) face)))
-                                    (doom-modeline-check-icon "nf-md-check_circle_outline" "✔" "*" 'doom-modeline-info))))))
+                               (some-waiting
+                                (concat
+                                 (doom-modeline-check-icon "nf-md-timer_sand" "⏳" "*" 'doom-modeline-debug)
+                                 (when (> count 0)
+                                   (concat
+                                    vsep
+                                    (doom-modeline-check-text (number-to-string count) 'doom-modeline-debug)))))
+                               ((null known)
+                                (doom-modeline-check-icon "nf-md-alert_box_outline" "⚠" "!" 'doom-modeline-urgent))
+                               (all-disabled
+                                (doom-modeline-check-icon "nf-md-alert_box_outline" "⚠" "!" 'doom-modeline-warning))
+                               (t
+                                (if (> count 0)
+                                    (let ((face (cond ((> .error 0) 'doom-modeline-urgent)
+                                                      ((> .warning 0) 'doom-modeline-warning)
+                                                      (t 'doom-modeline-info))))
+                                      (concat
+                                       (doom-modeline-check-icon "nf-md-alert_circle_outline" "⚠" "!" face)
+                                       vsep
+                                       (doom-modeline-check-text (number-to-string count) face)))
+                                  (doom-modeline-check-icon "nf-md-check_circle_outline" "✔" "*" 'doom-modeline-info))))))
                            ((or (eq doom-modeline-check 'full)
                                 (and (not doom-modeline--limited-width-p) (eq doom-modeline-check 'auto)))
                             (concat
@@ -1718,7 +1734,7 @@ Keymap for what is displayed by `mode-line-window-dedicated'."))
 ;;
 
 (doom-modeline-def-segment workspace-name
-  "The current workspace name or number.
+  "The current workspace name.
 Requires `eyebrowse-mode' to be enabled or `tab-bar-mode' tabs to be created."
   (when (and doom-modeline-workspace-name
              (not doom-modeline--limited-width-p))
@@ -1932,6 +1948,7 @@ TEXT is alternative if icon is not available."
                                            (icon    . "nf-md-alpha_u_circle")
                                            (unicode . "🅤"))))
       (doom-modeline--modal-icon
+       ;; Users can set `evil-xxx-state-tag'
        (let ((tag (evil-state-property evil-state :tag t)))
          (if (stringp tag) tag (funcall tag)))
        .face
@@ -1945,14 +1962,14 @@ TEXT is alternative if icon is not available."
              (not (bound-and-true-p evil-local-mode)))
     (doom-modeline--modal-icon
      "<W>" 'doom-modeline-overwrite "Overwrite mode"
-     "nf-md-marker" "🅦")))
+     "nf-md-marker" "✍")))
 
 (defsubst doom-modeline--god ()
   "The current god state which is enabled by the command `god-mode'."
   (when (bound-and-true-p god-local-mode)
     (doom-modeline--modal-icon
      "<G>" 'doom-modeline-god "God mode"
-     "nf-md-account_circle" "🅖")))
+     "nf-md-account_circle" "🙏")))
 
 (defsubst doom-modeline--ryo ()
   "The current ryo-modal state which is enabled by the command `ryo-modal-mode'."
@@ -3228,9 +3245,7 @@ The cdr can also be a function that returns a name to use.")
    (doom-modeline-spc)
    (doom-modeline--buffer-mode-icon)
    (doom-modeline--buffer-state-icon)
-   (propertize
-    "*%b*"
-    'face (doom-modeline-face 'doom-modeline-buffer-timemachine))))
+   (format-mode-line mode-line-buffer-identification)))
 
 ;;
 ;; Markdown/Org preview

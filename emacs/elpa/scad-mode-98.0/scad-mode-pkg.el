@@ -1,0 +1,2 @@
+;; Generated package description from scad-mode.el  -*- mode: lisp-data; no-byte-compile: t -*-
+(define-package "scad-mode" "98.0" "A major mode for editing OpenSCAD code" '((emacs "29.1") (compat "30")) :commit "546d1507cd131f55ca930de7ae1518884e8221f4" :maintainer '(("Len Trigg" . "lenbok@gmail.com") ("Daniel Mendler" . "mail@daniel-mendler.de")) :keywords '("languages") :url "https://github.com/openscad/emacs-scad-mode")

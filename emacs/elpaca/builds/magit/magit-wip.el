@@ -70,6 +70,12 @@ Customize `magit-overriding-githook-directory' to enable use of
 Git hooks."
   :package-version '(magit . "2.90.0")
   :group 'magit-wip
+  :set (lambda (symbol value)
+         (set-default-toplevel-value symbol value)
+         (when (bound-and-true-p magit-wip-mode)
+           (if (eq value 'immediately)
+               (add-hook 'git-commit-post-finish-hook #'magit-wip-commit)
+             (remove-hook 'git-commit-post-finish-hook #'magit-wip-commit))))
   :type '(choice
           (const :tag "Yes (safely, just in time)" t)
           (const :tag "Yes (immediately, with race condition)" immediately)
@@ -104,6 +110,7 @@ buffer."
   :package-version '(magit . "2.90.0")
   :lighter magit-wip-mode-lighter
   :global t
+  :set-after '(magit-wip-merge-branch)
   (cond
     (magit-wip-mode
      (add-hook 'after-save-hook #'magit-wip-commit-buffer-file)
@@ -111,22 +118,20 @@ buffer."
      (add-hook 'magit-before-change-functions #'magit-wip-commit)
      (add-hook 'before-save-hook #'magit-wip-commit-initial-backup)
      (add-hook 'magit-common-git-post-commit-functions #'magit-wip-post-commit)
-     (add-hook 'git-commit-post-finish-hook #'magit-wip-commit-post-editmsg))
+     (when (eq magit-wip-merge-branch 'immediately)
+       (add-hook 'git-commit-post-finish-hook #'magit-wip-commit)))
     (t
      (remove-hook 'after-save-hook #'magit-wip-commit-buffer-file)
      (remove-hook 'magit-after-apply-functions #'magit-wip-commit)
      (remove-hook 'magit-before-change-functions #'magit-wip-commit)
      (remove-hook 'before-save-hook #'magit-wip-commit-initial-backup)
      (remove-hook 'magit-common-git-post-commit-functions #'magit-wip-post-commit)
-     (remove-hook 'git-commit-post-finish-hook #'magit-wip-commit-post-editmsg))))
+     (remove-hook 'git-commit-post-finish-hook #'magit-wip-commit))))
 
 (defun magit-wip-commit-buffer-file (&optional msg)
   "Commit visited file to a worktree work-in-progress ref."
   (interactive (list "save %s snapshot"))
-  (when (and (not magit--wip-inhibit-autosave)
-             buffer-file-name
-             (magit-inside-worktree-p t)
-             (magit-file-tracked-p buffer-file-name))
+  (when (magit-wip--commitable-p)
     (magit-wip-commit-worktree
      (magit-wip-get-ref)
      (list buffer-file-name)
@@ -147,20 +152,13 @@ buffer."
 (put 'magit-wip-buffer-backed-up 'permanent-local t)
 
 (defun magit-wip-commit-initial-backup ()
-  (when (and (not magit-wip-buffer-backed-up)
-             buffer-file-name
-             (magit-inside-worktree-p t)
-             (magit-file-tracked-p buffer-file-name))
+  (when (magit-wip--commitable-p)
     (let ((magit-save-repository-buffers nil))
       (magit-wip-commit-buffer-file "autosave %s before save"))
     (setq magit-wip-buffer-backed-up t)))
 
 (defun magit-wip-post-commit (&rest _)
   (when (eq magit-wip-merge-branch 'githook)
-    (magit-wip-commit)))
-
-(defun magit-wip-commit-post-editmsg ()
-  (when (eq magit-wip-merge-branch 'immediately)
     (magit-wip-commit)))
 
 ;;; Core
@@ -288,6 +286,13 @@ commit message."
                         (branch (or ref (magit-get-current-branch))))
                 (concat "refs/heads/" branch))
               "HEAD")))
+
+(defun magit-wip--commitable-p ()
+  (and (not magit--wip-inhibit-autosave)
+       buffer-file-name
+       (magit-inside-worktree-p t)
+       (magit-file-tracked-p buffer-file-name)
+       (magit-wip-get-ref)))
 
 ;;; Log
 

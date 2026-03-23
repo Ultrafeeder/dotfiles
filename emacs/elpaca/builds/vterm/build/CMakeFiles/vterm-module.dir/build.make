@@ -44,10 +44,10 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /nix/store/zvv5mgim105vb0qp3m44r46iym2h8l3y-cmake-4.1.2/bin/cmake
+CMAKE_COMMAND = /nix/store/dx1zhzy951phnqyixy0z77s0gcp6wc2z-cmake-4.1.2/bin/cmake
 
 # The command to remove a file.
-RM = /nix/store/zvv5mgim105vb0qp3m44r46iym2h8l3y-cmake-4.1.2/bin/cmake -E rm -f
+RM = /nix/store/dx1zhzy951phnqyixy0z77s0gcp6wc2z-cmake-4.1.2/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
@@ -76,43 +76,43 @@ CMakeFiles/vterm-module.dir/vterm-module.c.o: CMakeFiles/vterm-module.dir/flags.
 CMakeFiles/vterm-module.dir/vterm-module.c.o: /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/vterm-module.c
 CMakeFiles/vterm-module.dir/vterm-module.c.o: CMakeFiles/vterm-module.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/vterm-module.dir/vterm-module.c.o"
-	/nix/store/x45d95acx6rybkb5cidrxxffval9k2pg-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/vterm-module.dir/vterm-module.c.o -MF CMakeFiles/vterm-module.dir/vterm-module.c.o.d -o CMakeFiles/vterm-module.dir/vterm-module.c.o -c /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/vterm-module.c
+	/nix/store/0j1ajvl2qwwb9n5a91hzd0j98fk9fa3k-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/vterm-module.dir/vterm-module.c.o -MF CMakeFiles/vterm-module.dir/vterm-module.c.o.d -o CMakeFiles/vterm-module.dir/vterm-module.c.o -c /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/vterm-module.c
 
 CMakeFiles/vterm-module.dir/vterm-module.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/vterm-module.dir/vterm-module.c.i"
-	/nix/store/x45d95acx6rybkb5cidrxxffval9k2pg-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/vterm-module.c > CMakeFiles/vterm-module.dir/vterm-module.c.i
+	/nix/store/0j1ajvl2qwwb9n5a91hzd0j98fk9fa3k-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/vterm-module.c > CMakeFiles/vterm-module.dir/vterm-module.c.i
 
 CMakeFiles/vterm-module.dir/vterm-module.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/vterm-module.dir/vterm-module.c.s"
-	/nix/store/x45d95acx6rybkb5cidrxxffval9k2pg-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/vterm-module.c -o CMakeFiles/vterm-module.dir/vterm-module.c.s
+	/nix/store/0j1ajvl2qwwb9n5a91hzd0j98fk9fa3k-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/vterm-module.c -o CMakeFiles/vterm-module.dir/vterm-module.c.s
 
 CMakeFiles/vterm-module.dir/utf8.c.o: CMakeFiles/vterm-module.dir/flags.make
 CMakeFiles/vterm-module.dir/utf8.c.o: /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/utf8.c
 CMakeFiles/vterm-module.dir/utf8.c.o: CMakeFiles/vterm-module.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/vterm-module.dir/utf8.c.o"
-	/nix/store/x45d95acx6rybkb5cidrxxffval9k2pg-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/vterm-module.dir/utf8.c.o -MF CMakeFiles/vterm-module.dir/utf8.c.o.d -o CMakeFiles/vterm-module.dir/utf8.c.o -c /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/utf8.c
+	/nix/store/0j1ajvl2qwwb9n5a91hzd0j98fk9fa3k-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/vterm-module.dir/utf8.c.o -MF CMakeFiles/vterm-module.dir/utf8.c.o.d -o CMakeFiles/vterm-module.dir/utf8.c.o -c /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/utf8.c
 
 CMakeFiles/vterm-module.dir/utf8.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/vterm-module.dir/utf8.c.i"
-	/nix/store/x45d95acx6rybkb5cidrxxffval9k2pg-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/utf8.c > CMakeFiles/vterm-module.dir/utf8.c.i
+	/nix/store/0j1ajvl2qwwb9n5a91hzd0j98fk9fa3k-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/utf8.c > CMakeFiles/vterm-module.dir/utf8.c.i
 
 CMakeFiles/vterm-module.dir/utf8.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/vterm-module.dir/utf8.c.s"
-	/nix/store/x45d95acx6rybkb5cidrxxffval9k2pg-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/utf8.c -o CMakeFiles/vterm-module.dir/utf8.c.s
+	/nix/store/0j1ajvl2qwwb9n5a91hzd0j98fk9fa3k-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/utf8.c -o CMakeFiles/vterm-module.dir/utf8.c.s
 
 CMakeFiles/vterm-module.dir/elisp.c.o: CMakeFiles/vterm-module.dir/flags.make
 CMakeFiles/vterm-module.dir/elisp.c.o: /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/elisp.c
 CMakeFiles/vterm-module.dir/elisp.c.o: CMakeFiles/vterm-module.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/vterm-module.dir/elisp.c.o"
-	/nix/store/x45d95acx6rybkb5cidrxxffval9k2pg-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/vterm-module.dir/elisp.c.o -MF CMakeFiles/vterm-module.dir/elisp.c.o.d -o CMakeFiles/vterm-module.dir/elisp.c.o -c /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/elisp.c
+	/nix/store/0j1ajvl2qwwb9n5a91hzd0j98fk9fa3k-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/vterm-module.dir/elisp.c.o -MF CMakeFiles/vterm-module.dir/elisp.c.o.d -o CMakeFiles/vterm-module.dir/elisp.c.o -c /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/elisp.c
 
 CMakeFiles/vterm-module.dir/elisp.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/vterm-module.dir/elisp.c.i"
-	/nix/store/x45d95acx6rybkb5cidrxxffval9k2pg-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/elisp.c > CMakeFiles/vterm-module.dir/elisp.c.i
+	/nix/store/0j1ajvl2qwwb9n5a91hzd0j98fk9fa3k-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/elisp.c > CMakeFiles/vterm-module.dir/elisp.c.i
 
 CMakeFiles/vterm-module.dir/elisp.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/vterm-module.dir/elisp.c.s"
-	/nix/store/x45d95acx6rybkb5cidrxxffval9k2pg-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/elisp.c -o CMakeFiles/vterm-module.dir/elisp.c.s
+	/nix/store/0j1ajvl2qwwb9n5a91hzd0j98fk9fa3k-gcc-wrapper-14.3.0/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/elisp.c -o CMakeFiles/vterm-module.dir/elisp.c.s
 
 # Object files for target vterm-module
 vterm__module_OBJECTS = \
@@ -128,7 +128,7 @@ vterm__module_EXTERNAL_OBJECTS =
 /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/vterm-module.so: CMakeFiles/vterm-module.dir/elisp.c.o
 /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/vterm-module.so: CMakeFiles/vterm-module.dir/build.make
 /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/vterm-module.so: CMakeFiles/vterm-module.dir/compiler_depend.ts
-/home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/vterm-module.so: /nix/store/26418glgc0mhiwjj50qv17f28lrad2nh-libvterm-neovim-0.3.3/lib/libvterm.so
+/home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/vterm-module.so: /nix/store/xhm12js5zzn8fcdlfyq1ag51ngn4r7vx-libvterm-neovim-0.3.3/lib/libvterm.so
 /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/vterm-module.so: CMakeFiles/vterm-module.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C shared module /home/ultrafeeder4/.config/emacs/elpaca/builds/vterm/vterm-module.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/vterm-module.dir/link.txt --verbose=$(VERBOSE)
