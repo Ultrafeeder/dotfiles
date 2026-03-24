@@ -1,11 +1,16 @@
 [General]
 Days Meta Infos=30
+PinnedDocuments=
 Save Meta Infos=true
 Show Full Path in Title=false
 Show Menu Bar=true
 Show Status Bar=true
 Show Tab Bar=true
 Show Url Nav Bar=true
+
+[MainWindow]
+2 screens: Height=449
+2 screens: Width=1298
 
 [filetree]
 editShade=183,220,246

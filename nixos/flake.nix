@@ -8,7 +8,10 @@
    {
       nixosConfigurations = {
         blacktower = nixpkgs-unstable.lib.nixosSystem rec {
-          modules = [./configuration.nix];
+          modules = [
+            ./configuration.nix
+            ../dooble/default.nix
+          ];
           system = "x86_64-linux";
           specialArgs = {
             pkgs-unstable = inputs.nixpkgs-unstable.legacyPackages.${system};

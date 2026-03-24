@@ -4,7 +4,7 @@
 
 {  pkgs-unstable, pkgs, ... }:
 let
-	home-manager = fetchTarball "https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz";
+	home-manager = fetchTarball "https://github.com/nix-community/home-manager/archive/master.tar.gz";
 
 in
 {

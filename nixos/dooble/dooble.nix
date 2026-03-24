@@ -1,29 +1,38 @@
 # dooble.nix
 {
   stdenv,
-  qmake,
-  make,
-  fetchFromGitHub
+  lib,
+  kdePackages,
+  libgcc, 
+  gnumake,
+  fetchzip
 }:
 
 stdenv.mkDerivation {
-  pname = "dooble";
-  version = "2026.03.09";
+  name = "dooble";
 
-  src = fetchFromGitHub {
-    owner = "textbrowser";
-    repo = "dooble";
-    rev = "f336128c163c081ab011d00607848edb39320814";
-    sha256 = "sha256-UCqUuhcLY/VbdSpbTCC/IvplEJaWzej/Zx0dBBVslEk=
+  src = fetchzip {
+    url = "https://github.com/textbrowser/dooble/archive/refs/tags/2026.03.09.tar.gz";
+    hash = "sha256-+5KwnYbW3ifv/I9bi0wfU+Lf9Bkvf24zSj/VHDVPRiI=
 ";
   };
+  buildInputs = [libgcc gnumake];
   
-  buildInputs = [ qmake make ];
+  nativeBuildInputs = with kdePackages; 
+    [ 
+      qmake
+      qtbase
+      qtcharts
+      qtwebengine
+      wrapQtAppsHook
+    ];
 
-  installphase = ''
-  mkdir -p $out/bin
+  buildPhase ="";
+  
+  installPhase = ''
   qmake -o Makefile dooble.pro
-  make
-  cp ./dooble $out/bin
+  make -k
   '';
+
+
 }
