@@ -31,7 +31,9 @@ stdenv.mkDerivation {
   
   installPhase = ''
   qmake -o Makefile dooble.pro
-  make -k
+  make -jk 4
+  chmod +x ./dooble
+  echo "DONE!"
   '';
 
 
