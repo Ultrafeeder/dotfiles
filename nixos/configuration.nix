@@ -176,15 +176,17 @@ in
    steam.enable = true;
 };
 
-  # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = 
     (with pkgs; [
 	    vim
       wayfire
+    ])
+    ++
+    (with pkgs.kdePackages; [
+      krohnkite
+      qtwebengine
     ])
     ++
     (with pkgs-unstable; [

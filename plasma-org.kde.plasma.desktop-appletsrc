@@ -6,6 +6,7 @@ RightButton;NoModifier=org.kde.contextmenu
 RightButton;NoModifier=org.kde.contextmenu
 
 [Containments][24]
+ItemGeometries-2648x1490=
 ItemGeometries-3440x1440=
 ItemGeometriesHorizontal=
 activityId=fccd1320-d0b3-43a5-b8f1-4e9bbcffee08
@@ -110,36 +111,25 @@ popupWidth=560
 customDateFormat=ddd-d
 dateFormat=custom
 
-[Containments][49]
-activityId=54c314c8-8b80-4117-94c1-55fe9f999425
-formfactor=0
-immutability=1
-lastScreen=0
-location=0
-plugin=org.kde.plasma.folder
-wallpaperplugin=org.kde.image
-
-[Containments][50]
-activityId=54c314c8-8b80-4117-94c1-55fe9f999425
-formfactor=0
-immutability=1
-lastScreen=1
-location=0
-plugin=org.kde.plasma.folder
-wallpaperplugin=org.kde.image
-
 [Containments][51]
 activityId=
 formfactor=2
 immutability=1
 lastScreen=0
-location=4
+location=3
 plugin=org.kde.panel
 wallpaperplugin=org.kde.image
 
 [Containments][51][Applets][52]
 immutability=1
 plugin=org.kde.plasma.kickoff
+
+[Containments][51][Applets][52][Configuration]
+popupHeight=509
+popupWidth=647
+
+[Containments][51][Applets][52][Configuration][General]
+favoritesPortedToKAstats=true
 
 [Containments][51][Applets][55]
 immutability=1
@@ -156,6 +146,8 @@ immutability=1
 lastScreen=-1
 location=0
 plugin=org.kde.plasma.systemtray
+popupHeight=432
+popupWidth=432
 wallpaperplugin=org.kde.image
 
 [Containments][51][Applets][56][Applets][57]
@@ -181,6 +173,9 @@ plugin=org.kde.plasma.devicenotifier
 [Containments][51][Applets][56][Applets][62]
 immutability=1
 plugin=org.kde.plasma.volume
+
+[Containments][51][Applets][56][Applets][62][Configuration][General]
+migrated=true
 
 [Containments][51][Applets][56][Applets][63]
 immutability=1
@@ -226,6 +221,10 @@ knownItems=org.kde.plasma.manage-inputmethod,org.kde.plasma.cameraindicator,org.
 immutability=1
 plugin=org.kde.plasma.digitalclock
 
+[Containments][51][Applets][69][Configuration]
+popupHeight=400
+popupWidth=560
+
 [Containments][51][Applets][69][Configuration][Appearance]
 customDateFormat=ddd-d
 dateFormat=custom
@@ -233,6 +232,18 @@ dateFormat=custom
 [Containments][51][Applets][70]
 immutability=1
 plugin=org.kde.plasma.showdesktop
+
+[Containments][51][General]
+AppletOrder=52;55;56;69;70
+
+[Containments][71]
+activityId=fccd1320-d0b3-43a5-b8f1-4e9bbcffee08
+formfactor=0
+immutability=1
+lastScreen=1
+location=0
+plugin=org.kde.plasma.folder
+wallpaperplugin=org.kde.image
 
 [ScreenMapping]
 itemsOnDisabledScreens=
