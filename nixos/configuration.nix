@@ -121,6 +121,8 @@ in
       openscad
       spotify
       discord
+      freecad
+      qutebrowser
       
       #lsps/languages
       typescript
@@ -145,6 +147,9 @@ in
         };
         init.defaultBranch = "main";
       };
+    };
+    foot = {
+      enable=true;
     };
 		neovim = {
 			enable = true;
@@ -186,7 +191,6 @@ in
     ++
     (with pkgs.kdePackages; [
       krohnkite
-      qtwebengine
     ])
     ++
     (with pkgs-unstable; [

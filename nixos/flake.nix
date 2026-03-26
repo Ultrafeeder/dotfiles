@@ -10,7 +10,6 @@
         blacktower = nixpkgs-unstable.lib.nixosSystem rec {
           modules = [
             ./configuration.nix
-            ./dooble/default.nix
 
           ];
           system = "x86_64-linux";
