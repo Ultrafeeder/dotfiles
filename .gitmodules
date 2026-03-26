@@ -1,0 +1,3 @@
+[submodule "nixos/dooble"]
+	path = nixos/dooble
+	url = https://github.com/textbrowser/dooble.git
