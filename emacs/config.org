@@ -751,6 +751,8 @@ _D_:delete mark  _r_:rename
 ** Languages
 #+begin_src emacs-lisp
 (use-package scad-mode)
+(use-package lsp-pyright
+  :custom (lsp-pyright-langserver-command "pyright"))
 (use-package typescript-mode
   :mode "\\.tsx?\\'"
   :config
@@ -770,6 +772,9 @@ _D_:delete mark  _r_:rename
 	 (bash-mode . lsp-deferred)
 	 (c-mode-hook . lsp-deferred)
 	 (c++-mode-hook . lsp-deferred)
+	 (python-mode . (lambda ()
+			  (require 'lsp-pyright)
+			  (lsp-deferred)))
 	 (scad-mode . lsp-deferred)
 	 (lsp-mode . lsp-enable-which-key-integration))
   :commands (lsp lsp-deferred))

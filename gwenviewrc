@@ -5,26 +5,26 @@ LastUsedVersion=210800
 MenuBar=Disabled
 
 [Recent Files]
-File1[$e]=$HOME/nvme/Pictures/Pictures/.thumbnails/213.jpg
-File10[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20210613_200004_486.jpg
-File2[$e]=$HOME/nvme/Pictures/Pictures/.thumbnails/214.jpg
-File3[$e]=$HOME/nvme/Pictures/Pictures/.thumbnails/215.jpg
-File4[$e]=$HOME/nvme/Pictures/Pictures/.thumbnails/223.jpg
-File5[$e]=$HOME/nvme/Pictures/Pictures/.thumbnails/225.jpg
-File6[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20220627_213414_164.jpg
-File7[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20210618_130442_149.jpg
-File8[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20210613_200040_938.jpg
-File9[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20210613_195837_950.jpg
-Name1[$e]=213.jpg
-Name10[$e]=IMG_20210613_200004_486.jpg
-Name2[$e]=214.jpg
-Name3[$e]=215.jpg
-Name4[$e]=223.jpg
-Name5[$e]=225.jpg
-Name6[$e]=IMG_20220627_213414_164.jpg
-Name7[$e]=IMG_20210618_130442_149.jpg
-Name8[$e]=IMG_20210613_200040_938.jpg
-Name9[$e]=IMG_20210613_195837_950.jpg
+File1[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20210613_200004_486.jpg
+File10[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20210613_090405_813.jpg
+File2[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20210613_200040_938.jpg
+File3[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20210618_130442_149.jpg
+File4[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20210620_184841_558.jpg
+File5[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20210710_131238_637.jpg
+File6[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20210715_203114_299.jpg
+File7[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20210727_231207_370.webp
+File8[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20220614_194510_002.jpg
+File9[$e]=$HOME/nvme/Pictures/Pictures/Instagram/IMG_20220627_213414_164.jpg
+Name1[$e]=IMG_20210613_200004_486.jpg
+Name10[$e]=IMG_20210613_090405_813.jpg
+Name2[$e]=IMG_20210613_200040_938.jpg
+Name3[$e]=IMG_20210618_130442_149.jpg
+Name4[$e]=IMG_20210620_184841_558.jpg
+Name5[$e]=IMG_20210710_131238_637.jpg
+Name6[$e]=IMG_20210715_203114_299.jpg
+Name7[$e]=IMG_20210727_231207_370.webp
+Name8[$e]=IMG_20220614_194510_002.jpg
+Name9[$e]=IMG_20220627_213414_164.jpg
 
 [SideBar]
-InformationSplitterSizes=206,247
+InformationSplitterSizes=207,248

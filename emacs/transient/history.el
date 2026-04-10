@@ -2,7 +2,7 @@
   ("-w"))
  (magit-branch nil)
  (magit-commit
-  ("--verbose")
+  ("--verbose" "--all")
   nil
   ("--all"))
  (magit-dispatch nil)

@@ -52,10 +52,10 @@ KrohnkiteDecrease=,none,Krohnkite: Decrease
 KrohnkiteFloatAll=Meta+Shift+F,none,Krohnkite: Toggle Float All
 KrohnkiteFloatingLayout=,none,Krohnkite: Floating Layout
 KrohnkiteFocusDown=Meta+Ctrl+U,none,Krohnkite: Focus Down
-KrohnkiteFocusLeft=Meta+Ctrl+O,none,Krohnkite: Focus Left
+KrohnkiteFocusLeft=Meta+Ctrl+Y,none,Krohnkite: Focus Left
 KrohnkiteFocusNext=,none,Krohnkite: Focus Next
 KrohnkiteFocusPrev=none,none,Krohnkite: Focus Previous
-KrohnkiteFocusRight=Meta+Ctrl+Y,none,Krohnkite: Focus Right
+KrohnkiteFocusRight=Meta+Ctrl+O,none,Krohnkite: Focus Right
 KrohnkiteFocusUp=Meta+Ctrl+I,none,Krohnkite: Focus Up
 KrohnkiteGrowHeight=Meta+Ctrl+J,none,Krohnkite: Grow Height
 KrohnkiteIncrease=Meta+I,none,Krohnkite: Increase
@@ -176,8 +176,8 @@ Window One Desktop to the Left=Meta+Ctrl+Shift+Left,Meta+Ctrl+Shift+Left,Window 
 Window One Desktop to the Right=Meta+Ctrl+Shift+Right,Meta+Ctrl+Shift+Right,Window One Desktop to the Right
 Window One Screen Down=Meta+Shift+Down,,Move Window One Screen Down
 Window One Screen Up=Meta+Shift+Up,,Move Window One Screen Up
-Window One Screen to the Left=,,Move Window One Screen to the Left
-Window One Screen to the Right=,,Move Window One Screen to the Right
+Window One Screen to the Left=Meta+Shift+Left,,Move Window One Screen to the Left
+Window One Screen to the Right=Meta+Shift+Right,,Move Window One Screen to the Right
 Window Operations Menu=Alt+F3,Alt+F3,Window Menu
 Window Pack Down=none,,Move Window Down
 Window Pack Left=none,,Move Window Left
@@ -303,6 +303,10 @@ toggle do not disturb=none,,Toggle do not disturb
 [services][org.kde.krunner.desktop]
 RunClipboard=Alt+Shift+R
 _launch=Alt+R
+
+[services][org.kde.spectacle.desktop]
+CurrentMonitorScreenShot=
+OpenWithoutScreenshot=
 
 [services][systemsettings.desktop]
 _launch=Tools\t

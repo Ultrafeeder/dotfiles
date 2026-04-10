@@ -1,21 +1,18 @@
 {
-  description = "Klassy, a global theme for KDE plasma with rich customization options. Currently only available in unstable";
+  description = "Main flake for system build";
   inputs = {
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
-  outputs = {nixpkgs-unstable, ... }@inputs:
+  outputs = {self, nixpkgs, ... }@inputs:
    {
       nixosConfigurations = {
-        blacktower = nixpkgs-unstable.lib.nixosSystem rec {
+        blacktower = nixpkgs.lib.nixosSystem {
           modules = [
             ./configuration.nix
-
           ];
+          specialArgs = {inherit inputs;};
           system = "x86_64-linux";
-          specialArgs = {
-            pkgs-unstable = inputs.nixpkgs-unstable.legacyPackages.${system};
-          };
         };
       };
   };

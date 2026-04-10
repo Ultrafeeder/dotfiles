@@ -15,4 +15,17 @@ systemd/
 session/
 xsettingsd/
 emacs/recentf
+emacs/elpaca/
+emacs/auto-save-list/
+emacs/eln-cache/
+emacs/session.*
 nixos/hardware-configuration.nix
+spotify/
+qutebrowser/
+spotify/
+xdg-desktop-portal-kderc
+FreeCAD/
+OrcaSlicer/
+QtProject/
+dolphin-emu/
+nextjs-nodejs/

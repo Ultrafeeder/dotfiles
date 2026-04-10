@@ -1,0 +1,6 @@
+[Desktop Entry]
+Exec=/home/ultrafeeder4/.config/nixos/startup-scripts/foot-daemon.sh
+Icon=application-x-shellscript
+Name=foot-daemon.sh
+Type=Application
+X-KDE-AutostartScript=true

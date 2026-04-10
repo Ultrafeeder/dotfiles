@@ -1,11 +1,9 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{  pkgs-unstable, pkgs, ... }:
+{  pkgs, ... }:
 let
-	home-manager = fetchTarball "https://github.com/nix-community/home-manager/archive/master.tar.gz";
-
+	home-manager = fetchTarball{ 
+url ="https://github.com/nix-community/home-manager/archive/master.tar.gz";
+sha256="1y53xq8k07hbvnaivkbanm93bzkkx0r2l188yczd3bly92r7150m";
+  };
 in
 {
   imports =
@@ -17,27 +15,21 @@ in
   experimental-features = nix-command flakes
   '';
 
-  # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  networking.hostName = "black_tower"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.hostName = "black_tower"; 
+  # networking.wireless.enable = true;
 
-  # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Enable networking
   networking.networkmanager.enable = true;
 
-  # Set your time zone.
   time.timeZone = "America/New_York";
 
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
   i18n.extraLocaleSettings = {
@@ -52,24 +44,18 @@ in
     LC_TIME = "en_US.UTF-8";
   };
 
-  # Enable the X11 windowing system.
-  # You can disable this if you're only using the Wayland session.
   services.xserver.enable = false;
 
-  # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
 
-  # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
     variant = "";
   };
 
-  # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -77,18 +63,12 @@ in
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
+    jack.enable = true;
 
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
     #media-session.enable = true;
   };
 
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.ultrafeeder4 = {
     isNormalUser = true;
     description = "ultrafeeder4";
@@ -122,10 +102,11 @@ in
       spotify
       discord
       freecad
-      qutebrowser
+      krita
       
       #lsps/languages
       typescript
+      pyright
       typescript-language-server
       bash-language-server
       vscode-langservers-extracted
@@ -150,6 +131,11 @@ in
     };
     foot = {
       enable=true;
+      settings = {
+        main = {
+          font = "JetBrainsMonoNL Nerd Font Mono:size=11";
+        };
+      };
     };
 		neovim = {
 			enable = true;
@@ -169,7 +155,6 @@ in
 	home.stateVersion = "25.11";
 	};
 
-  # Install firefox.
   programs = {
     bash.enable = true;
     direnv = {
@@ -179,7 +164,7 @@ in
 		};
    firefox.enable = true;
    steam.enable = true;
-};
+  };
 
   nixpkgs.config.allowUnfree = true;
 
@@ -187,30 +172,22 @@ in
     (with pkgs; [
 	    vim
       wayfire
+      klassy
     ])
     ++
     (with pkgs.kdePackages; [
       krohnkite
-    ])
-    ++
-    (with pkgs-unstable; [
-      klassy
     ]);
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
+   # programs.mtr.enable = true;
   # programs.gnupg.agent = {
   #   enable = true;
   #   enableSSHSupport = true;
   # };
 
-  # List services that you want to enable:
 
-  # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
 
-  # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.

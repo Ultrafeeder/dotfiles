@@ -571,6 +571,8 @@ _H_: new heading (at cursor)
 			       'ivy-rich-switch-buffer-transformer))
 
 (use-package scad-mode)
+(use-package lsp-pyright
+  :custom (lsp-pyright-langserver-command "pyright"))
 (use-package typescript-mode
   :mode "\\.tsx?\\'"
   :config
@@ -587,6 +589,9 @@ _H_: new heading (at cursor)
 	 (bash-mode . lsp-deferred)
 	 (c-mode-hook . lsp-deferred)
 	 (c++-mode-hook . lsp-deferred)
+	 (python-mode . (lambda ()
+			  (require 'lsp-pyright)
+			  (lsp-deferred)))
 	 (scad-mode . lsp-deferred)
 	 (lsp-mode . lsp-enable-which-key-integration))
   :commands (lsp lsp-deferred))
