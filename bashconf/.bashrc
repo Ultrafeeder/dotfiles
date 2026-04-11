@@ -2,6 +2,7 @@
 # ~/.bashrc
 #
 source /home/ultrafeeder4/git-prompt.sh
+source /home/ultrafeeder4/aliases.sh
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return

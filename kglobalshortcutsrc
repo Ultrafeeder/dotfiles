@@ -304,9 +304,5 @@ toggle do not disturb=none,,Toggle do not disturb
 RunClipboard=Alt+Shift+R
 _launch=Alt+R
 
-[services][org.kde.spectacle.desktop]
-CurrentMonitorScreenShot=
-OpenWithoutScreenshot=
-
 [services][systemsettings.desktop]
 _launch=Tools\t
