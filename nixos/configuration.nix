@@ -2,7 +2,6 @@
 let
 	home-manager = fetchTarball{ 
 url ="https://github.com/nix-community/home-manager/archive/master.tar.gz";
-sha256="1y53xq8k07hbvnaivkbanm93bzkkx0r2l188yczd3bly92r7150m";
   };
 in
 {
