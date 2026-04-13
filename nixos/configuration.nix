@@ -98,10 +98,11 @@ in
       # apps
       orca-slicer
       openscad
+      freecad
       spotify
       discord
-      freecad
       krita
+      brave
       
       #lsps/languages
       typescript

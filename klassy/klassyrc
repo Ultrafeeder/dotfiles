@@ -2,6 +2,8 @@
 ButtonColorsInactiveSameHoverPress=false
 ButtonIconOpacityActive=43
 ButtonIconOpacityInactive=43
+CloseButtonIconColorActive=AsSelected
+CloseButtonIconColorInactive=AsSelected
 UseHoverAccentActive=true
 UseHoverAccentInactive=true
 
@@ -15,7 +17,8 @@ MenuItemDrawStrongFocus=false
 SidePanelDrawFrame=true
 
 [Windeco]
-ButtonIconStyle=StyleSuessigKite
+ButtonIconStyle=StyleArkopal
+ButtonShape=ShapeSmallCircle
 DrawBackgroundGradient=true
 DrawBorderOnMaximizedWindows=true
 MatchTitleBarToApplicationColor=true
@@ -25,4 +28,5 @@ WindowCornerRadius=0
 
 [WindowOutlineStyle]
 WindowOutlineStyleActive=WindowOutlineAccentColor
+WindowOutlineStyleInactive=WindowOutlineAccentColor
 WindowOutlineThickness=3

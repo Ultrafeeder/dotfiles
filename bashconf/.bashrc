@@ -26,4 +26,6 @@ export PROMPT_COMMAND='__posh_git_ps1 "${PROMPT}" "${END_PROMPT}";' $PROMPT_COMM
 eval "$(ssh-agent)"
 eval "$(direnv hook bash)"
 
+clear
+
 
