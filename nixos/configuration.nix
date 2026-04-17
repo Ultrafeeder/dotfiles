@@ -165,6 +165,7 @@ in
     ++
     (with pkgs.kdePackages; [
       krohnkite
+      kdeplasma-addons
     ]);
 
    # programs.mtr.enable = true;
