@@ -134,6 +134,7 @@ ForegroundVisited=155,89,182
 
 [General]
 AccentColor=96,191,255
+BrowserApplication=brave-browser.desktop
 ColorSchemeHash=b1f55054aebee9440d3f1645801da8e7d2d358b7
 LastUsedCustomAccentColor=96,191,255
 XftAntialias=true
@@ -155,6 +156,9 @@ Allow Expansion=false
 Automatically select filename extension=true
 Breadcrumb Navigation=true
 Decoration position=2
+LocationCombo Completionmode=5
+PathCombo Completionmode=5
+Show Bookmarks=false
 Show Full Path=false
 Show Inline Previews=true
 Show Preview=false

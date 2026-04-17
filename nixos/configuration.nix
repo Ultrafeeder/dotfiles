@@ -1,6 +1,8 @@
 {  pkgs, ... }:
 let
-	home-manager = fetchTarball "https://github.com/nix-community/home-manager/archive/master.tar.gz";
+	home-manager = fetchTarball {
+    url ="https://github.com/nix-community/home-manager/archive/master.tar.gz";
+    };
 in
 {
   imports =
@@ -91,6 +93,7 @@ in
       fzf
       nerd-fonts.jetbrains-mono
       libgcc
+      mariadb
 
 
       # apps
@@ -135,19 +138,6 @@ in
         };
       };
     };
-		neovim = {
-			enable = true;
-			viAlias = true;
-      extraPackages = with pkgs; [
-        bash-language-server
-        ccls
-        vscode-langservers-extracted
-        lua-language-server
-        typescript
-        typescript-language-server
-        pyright
-      ];
-		};
     };
   nixpkgs.config.allowUnfree = true;
 	home.stateVersion = "25.11";

@@ -1,4 +1,4 @@
 [KFileDialog Settings]
-Recent Files[$e]=utils.scad,file:$HOME/repos/saishin-no-ken/kb-utils/joiner-utils.scad,file:$HOME/repos/saishin-no-ken/case-top.scad
-Recent URLs[$e]=file:$HOME/Downloads/,file:$HOME/,file:$HOME/repos/saishin-no-ken/,file:$HOME/repos/saishin-no-ken/kb-utils/
+Recent Files[$e]=utils.scad,file:$HOME/nvme/3dModels/keyboard-designs/saishin-no-ken/case-top.scad
+Recent URLs[$e]=file:$HOME/Downloads/,file:$HOME/,file:$HOME/nvme/3dModels/keyboard-designs/saishin-no-ken/
 detailViewIconSize=16

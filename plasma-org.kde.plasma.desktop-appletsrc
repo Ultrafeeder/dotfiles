@@ -133,7 +133,7 @@ plugin=org.kde.plasma.kickoff
 
 [Containments][51][Applets][52][Configuration]
 popupHeight=509
-popupWidth=647
+popupWidth=685
 
 [Containments][51][Applets][52][Configuration][General]
 favoritesPortedToKAstats=true
@@ -235,7 +235,7 @@ immutability=1
 plugin=org.kde.plasma.digitalclock
 
 [Containments][51][Applets][69][Configuration]
-popupHeight=400
+popupHeight=451
 popupWidth=560
 
 [Containments][51][Applets][69][Configuration][Appearance]
@@ -246,8 +246,21 @@ dateFormat=custom
 immutability=1
 plugin=org.kde.plasma.showdesktop
 
+[Containments][51][Applets][74]
+immutability=1
+plugin=org.kde.plasma.pager
+
+[Containments][51][Applets][74][Configuration][ConfigDialog]
+DialogHeight=630
+DialogWidth=810
+
+[Containments][51][Applets][74][Configuration][General]
+displayedText=Number
+showWindowIcons=true
+wrapPage=true
+
 [Containments][51][General]
-AppletOrder=52;55;56;69;70
+AppletOrder=52;74;55;56;69;70
 
 [Containments][71]
 activityId=fccd1320-d0b3-43a5-b8f1-4e9bbcffee08
@@ -263,8 +276,13 @@ DialogHeight=630
 DialogWidth=810
 
 [Containments][71][Wallpaper][org.kde.image][General]
-Image=file:///home/ultrafeeder4/hdd2/user/Images/Blame-DT2.png
+Blur=true
+Color=0,0,0
+DynamicMode=2
+FillMode=1
+Image=file:///home/ultrafeeder4/Pictures/backgrounds/bg.jpg
 SlidePaths=/nix/store/dyd90lbldg4wx44zsahgn1iqjhn9kqnl-breeze-6.6.3/share/wallpapers/,/run/current-system/sw/share/wallpapers/
 
 [ScreenMapping]
 itemsOnDisabledScreens=
+screenMapping=
